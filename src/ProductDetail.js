@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 
-const ProductDetail = () => {
+export default function ProductDetail() {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
   const navigate = useNavigate();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchData = async () => {
       try {
+        setLoading(true);
         const { data, error } = await supabase
           .from("product1")
           .select("*")
@@ -17,19 +19,33 @@ const ProductDetail = () => {
           .single();
 
         if (error) throw error;
-        setProduct(data);
+        setProduct(data || null);
       } catch (err) {
         console.error("Lỗi khi lấy dữ liệu sản phẩm:", err.message);
+        setProduct(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchProduct();
+    fetchData();
   }, [id]);
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: 50 }}>
+        <p>Đang tải thông tin sản phẩm...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
-      <div style={{ textAlign: "center", marginTop: "40px" }}>
-        <p>Đang tải thông tin sản phẩm...</p>
+      <div style={{ textAlign: "center", marginTop: 50 }}>
+        <p>Không tìm thấy sản phẩm.</p>
+        <button onClick={() => navigate(-1)} style={{ marginTop: 20 }}>
+          ← Quay lại
+        </button>
       </div>
     );
   }
@@ -37,11 +53,11 @@ const ProductDetail = () => {
   return (
     <div
       style={{
-        maxWidth: "900px",
+        maxWidth: 800,
         margin: "30px auto",
-        padding: "20px",
+        padding: 20,
         border: "1px solid #ddd",
-        borderRadius: "10px",
+        borderRadius: 10,
         backgroundColor: "#fff",
         boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       }}
@@ -49,92 +65,49 @@ const ProductDetail = () => {
       <button
         onClick={() => navigate(-1)}
         style={{
+          marginBottom: 20,
+          padding: "8px 14px",
+          borderRadius: 6,
+          border: "none",
           backgroundColor: "#007bff",
           color: "#fff",
-          border: "none",
-          padding: "8px 14px",
-          borderRadius: "6px",
           cursor: "pointer",
-          marginBottom: "20px",
         }}
       >
-        ← Quay lại danh sách
+        ← Quay lại
       </button>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "30px",
-          alignItems: "flex-start",
-        }}
-      >
-        {/* Hình ảnh sản phẩm */}
+      <div style={{ display: "flex", gap: 30, flexWrap: "wrap" }}>
         <div
           style={{
             flex: "1 1 300px",
-            maxWidth: "400px",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "#f9f9f9",
-            borderRadius: "10px",
+            borderRadius: 10,
             overflow: "hidden",
           }}
         >
           <img
-            src={product.image}
-            alt={product.title}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-            }}
+            src={product.image || "https://via.placeholder.com/300"}
+            alt={product.title || "Product"}
+            style={{ width: "100%", height: "100%", objectFit: "contain" }}
           />
         </div>
 
-        {/* Thông tin chi tiết */}
         <div style={{ flex: "1 1 300px" }}>
-          <h2 style={{ marginBottom: "10px" }}>{product.title}</h2>
+          <h2>{product.title || "Chưa có tên sản phẩm"}</h2>
           <p
             style={{ fontSize: "1.2rem", color: "#e63946", fontWeight: "bold" }}
           >
-            ${product.price}
+            ${product.price ?? "0"}
           </p>
-
-          <p style={{ marginTop: "10px", color: "#555" }}>
-            ⭐ {product.rating_rate} ({product.rating_count} đánh giá)
-          </p>
-
-          <p
-            style={{
-              marginTop: "20px",
-              lineHeight: "1.6",
-              color: "#333",
-              textAlign: "justify",
-            }}
-          >
+          <p style={{ marginTop: 20, color: "#333", lineHeight: 1.6 }}>
             {product.description || "Chưa có mô tả cho sản phẩm này."}
           </p>
-
-          <button
-            style={{
-              marginTop: "20px",
-              backgroundColor: "#28a745",
-              color: "#fff",
-              border: "none",
-              padding: "10px 16px",
-              borderRadius: "6px",
-              cursor: "pointer",
-            }}
-            onClick={() => alert("Đã thêm vào giỏ hàng!")}
-          >
-            🛒 Thêm vào giỏ hàng
-          </button>
         </div>
       </div>
     </div>
   );
-};
-
-export default ProductDetail;
+}

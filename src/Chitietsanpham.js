@@ -11,7 +11,6 @@ export default function Chitietsanpham() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Gọi API để lấy thông tin sản phẩm theo id
     const fetchProduct = async () => {
       try {
         const response = await fetch(

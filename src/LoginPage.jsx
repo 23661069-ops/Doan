@@ -1,91 +1,66 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import anhlogo1 from "./assets/images/keylogin.png";
-import "./assets/css/login.css";
+import { supabase } from "./supabaseClient";
+import "./assets/css/login.css"; // nếu có style riêng cho login
 
-const LoginPage = () => {
-  const [username, setUsername] = useState("");
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setError(null);
 
-    setTimeout(() => {
-      if (username.trim() && password.trim()) {
+    try {
+      // Đăng nhập bằng Supabase Auth
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Lưu user vào localStorage
         localStorage.setItem(
           "user",
-          JSON.stringify({ username, role: "user" })
+          JSON.stringify({ username: data.user.email })
         );
-        alert("✅ Đăng nhập thành công!");
-        navigate("/");
-      } else {
-        alert("❌ Vui lòng nhập đầy đủ thông tin!");
+        navigate("/"); // quay về trang chủ
       }
-      setLoading(false);
-    }, 1000);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
-    <div className="login-wrapper">
-      <div className="login-card">
-        <img src={anhlogo1} alt="Logo" className="login-logo" />
+    <div className="login-container">
+      <form className="login-form" onSubmit={handleLogin}>
+        <h2>Đăng nhập</h2>
+        {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <h2 className="login-title">Đăng nhập vào tài khoản</h2>
-        <p className="login-subtitle">Sử dụng tài khoản của bạn để tiếp tục</p>
+        <label>Email:</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-        <form onSubmit={handleLogin} className="login-form">
-          <div className="form-group">
-            <label>Tên đăng nhập</label>
-            <input
-              type="text"
-              placeholder="Nhập tên đăng nhập..."
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
+        <label>Mật khẩu:</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-          <div className="form-group">
-            <label>Mật khẩu</label>
-            <input
-              type="password"
-              placeholder="Nhập mật khẩu..."
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-
-          <button type="submit" disabled={loading}>
-            {loading ? "⏳ Đang xử lý..." : "Đăng nhập"}
-          </button>
-        </form>
-
-        <p className="register-link">
-          Bạn chưa có tài khoản? <a href="#">Tạo tài khoản mới</a>
-        </p>
-
-        <div className="social-login">
-          <button className="social-btn google">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png"
-              alt="Google"
-            />
-            <span>Đăng nhập Google</span>
-          </button>
-
-          <button className="social-btn facebook">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
-              alt="Facebook"
-            />
-            <span>Facebook</span>
-          </button>
-        </div>
-      </div>
+        <button type="submit" className="btn-login">
+          Đăng nhập
+        </button>
+      </form>
     </div>
   );
-};
-
-export default LoginPage;
+}

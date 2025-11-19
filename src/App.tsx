@@ -1,62 +1,54 @@
 import "./styles.css";
 // @ts-ignore
-import Home from "./HomePage";
-// @ts-ignore
 import Layout from "./Layout";
 // @ts-ignore
-import Trang1 from "./Trang1";
+import ListProducts_SP from "./ListProducts_SP";
 // @ts-ignore
 import Chitietsanpham from "./Chitietsanpham";
-
 // @ts-ignore
-import ProductDetail from "./ProductDetail";
-
+import LoginPage from "./LoginPage";
 // @ts-ignore
-import ListProducts from "./ListProducts";
-
+import LogoutPage from "./LogoutPage";
 // @ts-ignore
-import ListProducts_SP from "./ListProducts_SP";
-
+import ProtectedRoute from "./ProtectedRoute";
 // @ts-ignore
-import Trang2 from "./Trang2";
+import ListProducts_SP_Admin from "./ListProducts_SP_Admin";
+// @ts-ignore
+import EditProduct from "./EditProduct";
+
+// Trang menu người dùng
+// @ts-ignore
+import BoSuuTap from "./BoSuuTap";
+// @ts-ignore
+import BoSuuTapDetail from "./BoSuuTapDetail";
+// @ts-ignore
+import MuaSam from "./MuaSam";
+// @ts-ignore
+import KhuyenMai from "./KhuyenMai";
+// @ts-ignore
+import NhuongQuyen from "./NhuongQuyen";
+// @ts-ignore
+import TinTuc from "./TinTuc";
+// @ts-ignore
+import LienHe from "./LienHe";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-//@ts-ignore
-import LoginPage from "./LoginPage";
-//@ts-ignore
-import LogoutPage from "./LogoutPage";
-//@ts-ignore
-import ProtectedRoute from "./ProtectedRoute";
-//@ts-ignore
-import ListProducts_SP_Admin from "./ListProducts_SP_Admin";
-//@ts-ignore
-import EditProduct from "./EditProduct";
-
 export default function App() {
-  // return <Layout />;
-
   return (
     <BrowserRouter>
       <Routes>
-        {/* ✅ Layout chung cho toàn bộ hệ thống */}
         <Route path="/" element={<Layout />}>
-          {/* Trang chính (cho người dùng vãng lai) */}
+          {/* Trang chính */}
           <Route index element={<ListProducts_SP />} />
-          <Route path="trang1" element={<Trang1 />} />
-          <Route path="trang2" element={<Trang2 />} />
+          {/* Trang chi tiết sản phẩm */}
           <Route path="sanpham/:id" element={<Chitietsanpham />} />
+          {/* Trang admin edit sản phẩm */}
           <Route path="/admin/edit/:id" element={<EditProduct />} />
-
-          {/* <Route path="detail/:id" element={<ProductDetail />} /> */}
-
-          {/* ✅ Trang đăng nhập (nằm trong Layout) */}
+          {/* Trang auth */}
           <Route path="login" element={<LoginPage />} />
-
-          {/* ✅ Trang đăng xuất */}
           <Route path="logout" element={<LogoutPage />} />
-
-          {/* ✅ Trang quản trị (nằm trong Layout, chỉ Admin truy cập) */}
+          {/* Trang admin quản lý sản phẩm */}
           <Route
             path="admin/products"
             element={
@@ -65,6 +57,15 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          {/* Các trang menu người dùng */}
+          <Route path="bosuutap" element={<BoSuuTap />} />
+          <Route path="bosuutap/:id" element={<BoSuuTapDetail />} />{" "}
+          {/* Chi tiết bộ sưu tập */}
+          <Route path="muasam" element={<MuaSam />} />
+          <Route path="khuyenmai" element={<KhuyenMai />} />
+          <Route path="nhuongquyen" element={<NhuongQuyen />} />
+          <Route path="tintuc" element={<TinTuc />} />
+          <Route path="lienhe" element={<LienHe />} />
         </Route>
       </Routes>
     </BrowserRouter>

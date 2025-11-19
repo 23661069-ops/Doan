@@ -1,103 +1,209 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-// Sản phẩm mẫu
-const products = [
+const slides = [
   {
     id: 1,
-    name: "Váy Dạ Hội Sang Trọng",
-    description: "Thiết kế tinh tế, tôn dáng, phù hợp mọi dịp quan trọng.",
-    price: "1.200.000đ",
-    image: "https://example.com/images/dress1.jpg",
+    title: "Bộ sưu tập FW2025",
+    subtitle: "Phong cách thời thượng",
+    image: "banner",
+    dummyText: "Slide 1",
   },
   {
     id: 2,
-    name: "Áo Blouse Nữ",
-    description: "Phong cách nhẹ nhàng, thoải mái, dễ phối đồ hàng ngày.",
-    price: "350.000đ",
-    image: "https://example.com/images/blouse1.jpg",
+    title: "Khuyến mãi đặc biệt",
+    subtitle: "Giảm giá lên đến 50%",
+    image: "/path/to/your/image_2.jpg",
+    dummyText: "Slide 2",
   },
   {
     id: 3,
-    name: "Túi Xách Thời Trang",
-    description:
-      "Thiết kế hiện đại, chất liệu cao cấp, phối được với nhiều outfit.",
-    price: "750.000đ",
-    image: "https://example.com/images/bag1.jpg",
-  },
-  {
-    id: 4,
-    name: "Giày Cao Gót Nữ",
-    description: "Kiểu dáng thanh lịch, mang êm chân, tôn chiều cao.",
-    price: "900.000đ",
-    image: "https://example.com/images/shoes1.jpg",
+    title: "Sản phẩm mới",
+    subtitle: "Thời trang mùa đông",
+    image: "/path/to/your/image_3.jpg",
+    dummyText: "Slide 3",
   },
 ];
+const sliderStyles = `
+.hero-slider-container {
+  position: relative;
+  width: 100%;
+  height: 550px; 
+  overflow: hidden; /* Quan trọng: ẩn các slide không hoạt động */
+  background-color: #f0e8d9; 
+}
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease-in-out; /* Hiệu ứng chuyển mượt mà */
+}
 
-export default function HomePage() {
+.hero-slide.active {
+  opacity: 1; 
+  z-index: 10; 
+}
+
+.slide-content-wrapper {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.slide-dummy-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 25rem; 
+    color: rgba(48, 48, 48, 0.9); 
+    font-weight: 900;
+    z-index: 5; 
+    line-height: 1;
+    pointer-events: none; 
+}
+.overlay {
+  position: relative; 
+  text-align: center;
+  color: #303030;
+  z-index: 20; 
+}
+
+.overlay h2 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.overlay p {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.cta-button {
+  padding: 10px 20px;
+  background-color: #a02020; 
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.prev, .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  padding: 15px 10px;
+  font-size: 1.5rem;
+  z-index: 30;
+  color: #303030;
+  opacity: 0.6;
+}
+
+.prev { left: 20px; }
+.next { right: 20px; }
+
+.dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  gap: 10px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #fff;
+  opacity: 0.5;
+  cursor: pointer;
+  border: 1px solid #303030;
+  transition: all 0.3s;
+}
+
+.dot.active {
+  opacity: 1;
+  background-color: #a02020; 
+}
+`;
+
+export default function HeroSlider() {
+  const [current, setCurrent] = useState(0);
+  const length = slides.length;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [length]);
+  useEffect(() => {
+    const styleTag = document.createElement("style");
+    styleTag.textContent = sliderStyles;
+    styleTag.setAttribute("id", "hero-slider-styles");
+    document.head.appendChild(styleTag);
+
+    return () => {
+      const existingStyle = document.getElementById("hero-slider-styles");
+      if (existingStyle) {
+        document.head.removeChild(existingStyle);
+      }
+    };
+  }, []);
+
+  const nextSlide = () => setCurrent((prev) => (prev + 1) % length);
+  const prevSlide = () => setCurrent((prev) => (prev - 1 + length) % length);
+
   return (
-    <div className="max-w-7xl mx-auto px-6 py-6">
-      {/* Section: Banner giới thiệu */}
-      <section className="mb-16 text-center">
-        <h2 className="text-4xl font-bold mb-4">Phong cách thời trang nữ</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Khám phá bộ sưu tập thời trang nữ mới nhất, từ váy đầm sang trọng đến
-          phụ kiện hiện đại.
-        </p>
-      </section>
-
-      {/* Section: Bộ sưu tập nổi bật */}
-      <section className="mb-16">
-        <h2 className="text-3xl font-bold text-center mb-8">
-          Sản phẩm nổi bật
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition duration-300"
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-t-lg"
-              />
-              <div className="p-4 text-center">
-                <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                <p className="text-gray-500 text-sm mb-3">
-                  {product.description}
-                </p>
-                <p className="text-red-600 font-bold mb-3">{product.price}</p>
-                <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
-                  Mua ngay
-                </button>
-              </div>
+    <div className="hero-slider-container">
+      {slides.map((slide, index) => (
+        <div
+          key={slide.id}
+          className={`hero-slide ${index === current ? "active" : ""}`}
+        >
+          <div
+            className="slide-content-wrapper"
+            style={{ backgroundImage: `url(${slide.image})` }}
+          >
+            <div className="slide-dummy-text">{slide.dummyText}</div>
+            <div className="overlay">
+              <h2>{slide.title}</h2>
+              <p>{slide.subtitle}</p>
+              <button className="cta-button">Khám phá</button>
             </div>
-          ))}
+          </div>
         </div>
-      </section>
+      ))}
 
-      {/* Section: Giới thiệu thương hiệu */}
-      <section className="mb-16 text-center">
-        <h2 className="text-2xl font-bold mb-4">Về thương hiệu</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Chúng tôi mang đến những thiết kế thời trang nữ mới nhất, chất lượng
-          cao và dịch vụ tận tâm. Luôn cập nhật xu hướng để bạn luôn tự tin tỏa
-          sáng.
-        </p>
-      </section>
+      <button className="prev" onClick={prevSlide}>
+        ❮
+      </button>
+      <button className="next" onClick={nextSlide}>
+        ❯
+      </button>
 
-      {/* Section: Call to action */}
-      <section className="text-center bg-gray-100 py-12 rounded-lg">
-        <h2 className="text-2xl font-bold mb-4">Đặt hàng ngay hôm nay!</h2>
-        <p className="text-gray-600 mb-6">
-          Liên hệ với chúng tôi để được tư vấn phong cách và đặt sản phẩm yêu
-          thích.
-        </p>
-        <button className="bg-red-600 text-white px-6 py-3 rounded hover:bg-red-700 transition">
-          Liên hệ ngay
-        </button>
-      </section>
+      <div className="dots">
+        {slides.map((_, i) => (
+          <span
+            key={i}
+            className={`dot ${i === current ? "active" : ""}`}
+            onClick={() => setCurrent(i)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
