@@ -14,7 +14,7 @@ import ProtectedRoute from "./ProtectedRoute";
 // @ts-ignore
 import ListProducts_SP_Admin from "./ListProducts_SP_Admin";
 // @ts-ignore
-import EditProduct from "./EditProduct";
+import EditProduct from "./EditProducts";
 
 // Trang menu người dùng
 // @ts-ignore
@@ -25,8 +25,6 @@ import BoSuuTapDetail from "./BoSuuTapDetail";
 import MuaSam from "./MuaSam";
 // @ts-ignore
 import KhuyenMai from "./KhuyenMai";
-// @ts-ignore
-import NhuongQuyen from "./NhuongQuyen";
 // @ts-ignore
 import TinTuc from "./TinTuc";
 // @ts-ignore
@@ -63,7 +61,6 @@ export default function App() {
           {/* Chi tiết bộ sưu tập */}
           <Route path="muasam" element={<MuaSam />} />
           <Route path="khuyenmai" element={<KhuyenMai />} />
-          <Route path="nhuongquyen" element={<NhuongQuyen />} />
           <Route path="tintuc" element={<TinTuc />} />
           <Route path="lienhe" element={<LienHe />} />
         </Route>

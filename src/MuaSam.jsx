@@ -1,90 +1,71 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "./supabaseClient";
+import React, { useEffect, useState } from "react";
+import supabase from "./supabaseClient";
+import { Link } from "react-router-dom";
 
 export default function MuaSam() {
-  const [products, setProducts] = useState([]);
-  const navigate = useNavigate();
+  const [list, setList] = useState([]);
+  const [sort, setSort] = useState("asc");
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("product1")
-          .select("*")
-          .order("id", { ascending: true });
-        if (error) throw error;
-        setProducts(data);
-      } catch (err) {
-        console.error("Lỗi khi lấy dữ liệu:", err.message);
-      }
+    const load = async () => {
+      let { data } = await supabase.from("product1").select("*");
+
+      data.sort((a, b) =>
+        sort === "asc" ? a.price - b.price : b.price - a.price
+      );
+
+      setList(data);
     };
-    fetchProducts();
-  }, []);
+    load();
+  }, [sort]);
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Mua Sắm</h2>
+      <h1>Mua Sắm</h1>
+
+      <div style={{ marginBottom: 20 }}>
+        <select
+          onChange={(e) => setSort(e.target.value)}
+          value={sort}
+          style={{ padding: 8 }}
+        >
+          <option value="asc">Giá tăng dần</option>
+          <option value="desc">Giá giảm dần</option>
+        </select>
+      </div>
 
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: "20px",
+          gap: 20,
         }}
       >
-        {products.map((p) => (
-          <div
+        {list.map((p) => (
+          <Link
             key={p.id}
-            onClick={() => navigate(`/sanpham/${p.id}`)}
+            to={`/sanpham/${p.id}`}
             style={{
+              textDecoration: "none",
+              color: "inherit",
               border: "1px solid #ddd",
-              borderRadius: "10px",
-              padding: "12px",
-              textAlign: "center",
-              cursor: "pointer",
-              background: "#fff",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              transition: "transform 0.2s ease, box-shadow 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+              borderRadius: 10,
+              padding: 10,
             }}
           >
-            <div
+            <img
+              src={p.image}
+              alt=""
               style={{
                 width: "100%",
-                height: "200px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                overflow: "hidden",
-                borderRadius: "8px",
-                backgroundColor: "#f9f9f9",
+                height: 220,
+                objectFit: "cover",
+                borderRadius: 8,
               }}
-            >
-              <img
-                src={p.image}
-                alt={p.title}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-
-            <h4 style={{ margin: "10px 0 5px", fontSize: "1rem" }}>
-              {p.title}
-            </h4>
-            <p style={{ color: "#e63946", fontWeight: "bold", margin: "0" }}>
-              ${p.price}
-            </p>
-            <small style={{ color: "#555" }}>
-              ⭐ {p.rating_rate} | ({p.rating_count} đánh giá)
-            </small>
-          </div>
+            />
+            <h4>{p.title}</h4>
+            <p style={{ color: "#e63946", fontWeight: 600 }}>${p.price}</p>
+          </Link>
         ))}
       </div>
     </div>

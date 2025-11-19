@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "./supabaseClient";
-import "./assets/css/login.css"; // nếu có style riêng cho login
+import supabase from "./supabaseClient";
+import "./assets/css/login.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,7 +14,6 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // Đăng nhập bằng Supabase Auth
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -23,12 +22,11 @@ export default function LoginPage() {
       if (error) throw error;
 
       if (data.user) {
-        // Lưu user vào localStorage
         localStorage.setItem(
           "user",
           JSON.stringify({ username: data.user.email })
         );
-        navigate("/"); // quay về trang chủ
+        navigate("/"); 
       }
     } catch (err) {
       setError(err.message);

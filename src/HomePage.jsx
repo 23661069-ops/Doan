@@ -38,7 +38,7 @@ const sliderStyles = `
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity 1s ease-in-out; /* Hiệu ứng chuyển mượt mà */
+  transition: opacity 1s ease-in-out;
 }
 
 .hero-slide.active {

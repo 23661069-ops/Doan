@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "./supabaseClient";
+import supabase from "./supabaseClient"; 
 import { useNavigate } from "react-router-dom";
 import "./assets/css/quanlysp.css";
 

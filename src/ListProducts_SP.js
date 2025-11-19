@@ -1,102 +1,78 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "./supabaseClient";
+import supabase from "./supabaseClient";
 
-const ListProducts_SP = () => {
-  const [listProduct, setListProduct] = useState([]);
+export default function ListProducts_SP() {
+  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("product1")
-          .select("*")
-          .order("id", { ascending: true });
-        if (error) throw error;
-        setListProduct(data || []); // đảm bảo luôn là array
-      } catch (err) {
-        console.error("Lỗi khi lấy dữ liệu:", err.message);
-      }
+    const load = async () => {
+      const { data, error } = await supabase.from("product1").select("*");
+      if (!error) setProducts(data);
     };
-    fetchProducts();
+    load();
   }, []);
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <h2>Danh sách sản phẩm</h2>
+  if (!products || products.length === 0) return <p>Đang tải sản phẩm...</p>;
 
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>Sản phẩm</h1>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: "20px",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gap: 20,
         }}
       >
-        {listProduct.length === 0 ? (
-          <p>Không có sản phẩm nào.</p>
-        ) : (
-          listProduct.map((p) => (
-            <div
-              key={p.id}
-              onClick={() => navigate(`/detail/${p.id}`)}
+        {products.map((p) => (
+          <div
+            key={p.id}
+            style={{
+              border: "1px solid #ccc",
+              borderRadius: 8,
+              padding: 10,
+              textAlign: "center",
+              cursor: "pointer",
+              background: "#fff",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+              transition: "transform 0.2s",
+            }}
+            onClick={() => navigate(`/sanpham/${p.id}`)}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.transform = "translateY(-4px)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.transform = "translateY(0)")
+            }
+          >
+            <img
+              src={p.image || "/placeholder.png"}
+              alt={p.title}
               style={{
-                border: "1px solid #ddd",
-                borderRadius: "10px",
-                padding: "12px",
-                textAlign: "center",
-                cursor: "pointer",
-                background: "#fff",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                width: "100%",
+                height: 150,
+                objectFit: "cover",
+                borderRadius: 4,
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-4px)";
-                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+            />
+            <h3 style={{ margin: "10px 0 5px" }}>{p.title}</h3>
+            <p style={{ color: "#e63946", fontWeight: "bold" }}>
+              Giá: ${p.price}
+            </p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/sanpham/${p.id}`);
               }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
-              }}
+              style={{ marginTop: 10, padding: "5px 10px", cursor: "pointer" }}
             >
-              <div
-                style={{
-                  width: "100%",
-                  height: "200px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  overflow: "hidden",
-                  borderRadius: "8px",
-                  backgroundColor: "#f9f9f9",
-                }}
-              >
-                <img
-                  src={p.image || "https://via.placeholder.com/200"}
-                  alt={p.title || "Product"}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              </div>
-
-              <h4 style={{ margin: "10px 0 5px", fontSize: "1rem" }}>
-                {p.title || "Chưa có tên"}
-              </h4>
-              <p style={{ color: "#e63946", fontWeight: "bold", margin: "0" }}>
-                ${p.price || "0"}
-              </p>
-              <small style={{ color: "#555" }}>
-                ⭐ {p.rating_rate ?? 0} | ({p.rating_count ?? 0} đánh giá)
-              </small>
-            </div>
-          ))
-        )}
+              Xem chi tiết
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
-};
-
-export default ListProducts_SP;
+}

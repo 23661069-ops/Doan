@@ -1,4 +1,4 @@
-// Sửa ngày 4/11/2025 vì thêm trang Đăng xuất để xóa session người dùng
+
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -6,10 +6,7 @@ const LogoutPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // ✅ Xóa thông tin user trong localStorage
     localStorage.removeItem("user");
-
-    // 🕒 Hiển thị tạm thời thông báo rồi tự động chuyển hướng
     const timer = setTimeout(() => {
       navigate("/login", { replace: true });
     }, 2000);

@@ -1,75 +1,69 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { supabase } from "./supabaseClient";
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import supabase from "./supabaseClient";
 
 export default function BoSuuTapDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [collection, setCollection] = useState(null);
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchCollection = async () => {
-      const { data, error } = await supabase
-        .from("collections")
-        .select("*")
-        .eq("id", id)
-        .single();
-      if (error) console.error("Lỗi:", error.message);
-      else setCollection(data);
+    const loadProducts = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        // Lấy sản phẩm trong bộ sưu tập từ bảng bosuutap_items
+        const { data: items, error: itemError } = await supabase
+          .from("bosuutap_items")
+          .select("product1(*)") // join tới bảng product1
+          .eq("collection_id", id);
+
+        if (itemError) throw itemError;
+
+        // Lấy danh sách sản phẩm, loại bỏ null
+        const productList = items.map((item) => item.product1).filter(Boolean);
+
+        setProducts(productList);
+      } catch (err) {
+        console.error(err);
+        setError("Không thể tải sản phẩm của bộ sưu tập này.");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const fetchProducts = async () => {
-      const { data, error } = await supabase
-        .from("product1")
-        .select("*")
-        .eq("collection_id", id); // lấy sản phẩm theo bộ sưu tập
-      if (error) console.error("Lỗi:", error.message);
-      else setProducts(data);
-    };
-
-    fetchCollection();
-    fetchProducts();
+    loadProducts();
   }, [id]);
 
-  if (!collection) return <p>Đang tải chi tiết bộ sưu tập...</p>;
+  if (loading) return <p style={{ padding: 20 }}>Đang tải sản phẩm...</p>;
+  if (error) return <p style={{ padding: 20, color: "red" }}>{error}</p>;
+  if (!products.length)
+    return (
+      <p style={{ padding: 20 }}>Chưa có sản phẩm nào trong bộ sưu tập này.</p>
+    );
 
   return (
-    <div style={{ padding: "20px" }}>
-      <button onClick={() => navigate(-1)}>← Quay lại</button>
-      <h1>{collection.name}</h1>
-      <img
-        src={collection.image}
-        alt={collection.name}
-        style={{
-          width: "100%",
-          maxHeight: "400px",
-          objectFit: "cover",
-          marginBottom: "20px",
-        }}
-      />
-      <p>{collection.description}</p>
-
-      <h2>Sản phẩm trong bộ sưu tập</h2>
+    <div style={{ padding: 20 }}>
+      <h2>Bộ Sưu Tập #{id}</h2>
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: "20px",
+          gap: 20,
         }}
       >
         {products.map((p) => (
-          <div
+          <Link
             key={p.id}
-            onClick={() => navigate(`/sanpham/${p.id}`)}
+            to={`/sanpham/${p.id}`}
             style={{
+              textDecoration: "none",
+              color: "inherit",
               border: "1px solid #ddd",
-              borderRadius: "10px",
-              padding: "12px",
-              textAlign: "center",
-              cursor: "pointer",
-              background: "#fff",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+              borderRadius: 10,
+              padding: 10,
             }}
           >
             <img
@@ -77,14 +71,14 @@ export default function BoSuuTapDetail() {
               alt={p.title}
               style={{
                 width: "100%",
-                height: "200px",
+                height: 220,
                 objectFit: "cover",
-                borderRadius: "8px",
+                borderRadius: 8,
               }}
             />
             <h4>{p.title}</h4>
-            <p style={{ color: "#e63946", fontWeight: "bold" }}>${p.price}</p>
-          </div>
+            <p style={{ color: "#e63946", fontWeight: 600 }}>${p.price}</p>
+          </Link>
         ))}
       </div>
     </div>

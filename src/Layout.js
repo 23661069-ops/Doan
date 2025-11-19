@@ -3,7 +3,9 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import HeroSlider from "./HeroSlider";
 import "./assets/css/main.css";
 import "./assets/css/login.css";
+import Logo from "./assets/images/Logo.png";
 import HomePage from "./HomePage";
+import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -22,11 +24,10 @@ export default function Layout() {
 
   return (
     <div className="main-wrapper">
-      {/* Top header */}
       <div className="top-bar">
         <div className="top-bar-left">
-          <span>📞 0972359666</span>
-          <span>Hệ thống showroom</span>
+          <span>📞 0398941795</span>
+          <span>Hệ thống</span>
         </div>
         <div className="top-bar-right">
           <Link to="/orders" className="top-link">
@@ -38,12 +39,11 @@ export default function Layout() {
         </div>
       </div>
 
-      {/* Main header */}
       <div className="main-header">
         <div className="header-content">
           <div className="logo">
-            <img src="/logo.png" alt="Logo" />
-            <span className="logo-text">Trang Web Của Bạn</span>
+            <img src={Logo} alt="Logo" />
+            <span className="logo-text">Thời Trang Nữ</span>
           </div>
           <div className="search-box">
             <input
@@ -85,9 +85,6 @@ export default function Layout() {
             <Link to="/khuyenmai">KHUYẾN MÃI</Link>
           </li>
           <li className="nav-item">
-            <Link to="/nhuongquyen">NHƯỢNG QUYỀN</Link>
-          </li>
-          <li className="nav-item">
             <Link to="/tintuc">TIN TỨC</Link>
           </li>
           <li className="nav-item">
@@ -95,18 +92,81 @@ export default function Layout() {
           </li>
         </ul>
       </nav>
-
-      {/* Hero Slider */}
       <HeroSlider />
-
-      {/* Main content */}
       <main className="main-content">
         <Outlet />
       </main>
-
-      {/* Footer */}
       <footer className="footer">
-        © 2025 - Thiết kế giao diện mô phỏng Orchid
+        <div className="footer-container">
+          {/* Cột 1: Liên hệ */}
+          <div className="footer-column">
+            <h3>Liên Hệ</h3>
+            <p>📞 0398941795</p>
+            <p>📧 yennhi405205@gmail.com</p>
+            <p>🏠 33 Vĩnh Viễn, Phường Vườn Lài, TP HCM</p>
+          </div>
+
+          {/* Cột 2: Liên kết nhanh */}
+          <div className="footer-column">
+            <h3>Liên Kết</h3>
+            <ul>
+              <li>
+                <Link to="/">Trang Chủ</Link>
+              </li>
+              <li>
+                <Link to="/bosuutap">Bộ Sưu Tập</Link>
+              </li>
+              <li>
+                <Link to="/muasam">Mua Sắm</Link>
+              </li>
+              <li>
+                <Link to="/khuyenmai">Khuyến Mãi</Link>
+              </li>
+              <li>
+                <Link to="/tintuc">Tin Tức</Link>
+              </li>
+              <li>
+                <Link to="/lienhe">Liên Hệ</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Cột 3: Newsletter + Social */}
+          <div className="footer-column">
+            <h3>Đăng Ký Nhận Tin</h3>
+            <p>Nhập email để nhận khuyến mãi mới nhất!</p>
+            <div className="footer-newsletter">
+              <input type="email" placeholder="Email của bạn" />
+              <button>Gửi</button>
+            </div>
+            <div className="footer-social">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaFacebookF />
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaTwitter />
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaInstagram />
+              </a>
+            </div>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          © 2025 - Website Thời Trang Nữ. All rights reserved.
+        </div>
       </footer>
     </div>
   );
