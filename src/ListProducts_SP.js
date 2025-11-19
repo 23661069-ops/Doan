@@ -14,7 +14,7 @@ const ListProducts_SP = () => {
           .select("*")
           .order("id", { ascending: true });
         if (error) throw error;
-        setListProduct(data);
+        setListProduct(data || []); // đảm bảo luôn là array
       } catch (err) {
         console.error("Lỗi khi lấy dữ liệu:", err.message);
       }
@@ -33,63 +33,67 @@ const ListProducts_SP = () => {
           gap: "20px",
         }}
       >
-        {listProduct.map((p) => (
-          <div
-            key={p.id}
-            onClick={() => navigate(`/detail/${p.id}`)}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "10px",
-              padding: "12px",
-              textAlign: "center",
-              cursor: "pointer",
-              background: "#fff",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              transition: "transform 0.2s ease, box-shadow 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
-            }}
-          >
+        {listProduct.length === 0 ? (
+          <p>Không có sản phẩm nào.</p>
+        ) : (
+          listProduct.map((p) => (
             <div
+              key={p.id}
+              onClick={() => navigate(`/detail/${p.id}`)}
               style={{
-                width: "100%",
-                height: "200px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                overflow: "hidden",
-                borderRadius: "8px",
-                backgroundColor: "#f9f9f9",
+                border: "1px solid #ddd",
+                borderRadius: "10px",
+                padding: "12px",
+                textAlign: "center",
+                cursor: "pointer",
+                background: "#fff",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                transition: "transform 0.2s ease, box-shadow 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
               }}
             >
-              <img
-                src={p.image}
-                alt={p.title}
+              <div
                 style={{
                   width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
+                  height: "200px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  overflow: "hidden",
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
                 }}
-              />
-            </div>
+              >
+                <img
+                  src={p.image || "https://via.placeholder.com/200"}
+                  alt={p.title || "Product"}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
 
-            <h4 style={{ margin: "10px 0 5px", fontSize: "1rem" }}>
-              {p.title}
-            </h4>
-            <p style={{ color: "#e63946", fontWeight: "bold", margin: "0" }}>
-              ${p.price}
-            </p>
-            <small style={{ color: "#555" }}>
-              ⭐ {p.rating_rate} | ({p.rating_count} đánh giá)
-            </small>
-          </div>
-        ))}
+              <h4 style={{ margin: "10px 0 5px", fontSize: "1rem" }}>
+                {p.title || "Chưa có tên"}
+              </h4>
+              <p style={{ color: "#e63946", fontWeight: "bold", margin: "0" }}>
+                ${p.price || "0"}
+              </p>
+              <small style={{ color: "#555" }}>
+                ⭐ {p.rating_rate ?? 0} | ({p.rating_count ?? 0} đánh giá)
+              </small>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

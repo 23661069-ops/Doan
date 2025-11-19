@@ -3,6 +3,7 @@ import { supabase } from "./supabaseClient";
 import { useNavigate } from "react-router-dom";
 import "./assets/css/quanlysp.css";
 
+// Bỏ type Product[], dùng array bình thường
 const ListProducts_SP_Admin = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
@@ -43,8 +44,6 @@ const ListProducts_SP_Admin = () => {
         <div>
           <h2>Quản lý sản phẩm (Admin)</h2>
 
-          {/* Nút thêm mới trên đầu bảng */}
-
           <table className="product-table">
             <thead>
               <tr>
@@ -62,9 +61,9 @@ const ListProducts_SP_Admin = () => {
                     <img src={p.image} alt={p.title} className="thumb" />
                   </td>
                   <td style={{ width: "500px" }}>{p.title}</td>
-                  <td>{p.price}</td>
+                  <td>${p.price}</td>
                   <td>
-                    ⭐ {p.rating_rate} ({p.rating_count})
+                    ⭐ {p.rating_rate || 0} ({p.rating_count || 0})
                   </td>
                   <td style={{ width: "150px" }}>
                     <button
