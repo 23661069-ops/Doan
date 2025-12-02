@@ -3,41 +3,36 @@ import { useNavigate } from "react-router-dom";
 import Logo from "./assets/images/Logo.png";
 import "./assets/css/login.css";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
 
-    // Lấy dữ liệu user đã đăng ký
-    const storedUser = localStorage.getItem("user_data");
-    if (!storedUser) {
-      alert("Chưa có tài khoản, vui lòng đăng ký!");
+    if (password !== confirm) {
+      alert("Mật khẩu xác nhận không khớp!");
       return;
     }
 
-    const user = JSON.parse(storedUser);
+    // Lưu user vào localStorage tạm (thay bằng API khi backend)
+    const newUser = { username, password };
+    localStorage.setItem("user_data", JSON.stringify(newUser));
 
-    if (username === user.username && password === user.password) {
-      // Lưu session user hiện tại
-      localStorage.setItem("user", JSON.stringify({ username }));
-      alert("Đăng nhập thành công!");
-      navigate("/"); // quay về trang chủ
-    } else {
-      alert("Sai tên đăng nhập hoặc mật khẩu!");
-    }
+    alert("Đăng ký thành công! Vui lòng đăng nhập.");
+    navigate("/login");
   };
 
   return (
     <div className="login-wrapper">
       <div className="login-card">
         <img src={Logo} alt="Logo" className="login-logo" />
-        <h2 className="login-title">Đăng nhập</h2>
-        <p className="login-subtitle">Đăng nhập để tiếp tục mua sắm</p>
+        <h2 className="login-title">Đăng ký tài khoản</h2>
+        <p className="login-subtitle">Tạo tài khoản mới để mua sắm</p>
 
-        <form className="login-form" onSubmit={handleLogin}>
+        <form className="login-form" onSubmit={handleRegister}>
           <div className="form-group">
             <label>Tên đăng nhập</label>
             <input
@@ -58,11 +53,21 @@ export default function LoginPage() {
             />
           </div>
 
-          <button type="submit">Đăng nhập</button>
+          <div className="form-group">
+            <label>Xác nhận mật khẩu</label>
+            <input
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit">Đăng ký</button>
         </form>
 
         <p className="register-link">
-          Chưa có tài khoản? <a href="/register">Đăng ký</a>
+          Đã có tài khoản? <a href="/login">Đăng nhập</a>
         </p>
       </div>
     </div>

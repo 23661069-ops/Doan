@@ -8,14 +8,26 @@ export default function MuaSam() {
 
   useEffect(() => {
     const load = async () => {
-      let { data } = await supabase.from("product1").select("*");
+      const { data, error } = await supabase.from("product1").select("*");
 
-      data.sort((a, b) =>
+      // Nếu có lỗi, in ra console và trả về mảng rỗng
+      if (error) {
+        console.error("Supabase error:", error);
+        setList([]);
+        return;
+      }
+
+      // Nếu data = null → thay bằng []
+      const safeData = data || [];
+
+      // Sắp xếp mảng
+      const sorted = safeData.sort((a, b) =>
         sort === "asc" ? a.price - b.price : b.price - a.price
       );
 
-      setList(data);
+      setList(sorted);
     };
+
     load();
   }, [sort]);
 

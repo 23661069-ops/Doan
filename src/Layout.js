@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import HeroSlider from "./HeroSlider";
+import Logo from "./assets/images/Logo.png";
+import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
 import "./assets/css/main.css";
 import "./assets/css/login.css";
-import Logo from "./assets/images/Logo.png";
-import HomePage from "./HomePage";
-import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -24,6 +23,7 @@ export default function Layout() {
 
   return (
     <div className="main-wrapper">
+      {/* Top Bar */}
       <div className="top-bar">
         <div className="top-bar-left">
           <span>📞 0398941795</span>
@@ -39,12 +39,14 @@ export default function Layout() {
         </div>
       </div>
 
+      {/* Header */}
       <div className="main-header">
         <div className="header-content">
           <div className="logo">
             <img src={Logo} alt="Logo" />
             <span className="logo-text">Thời Trang Nữ</span>
           </div>
+
           <div className="search-box">
             <input
               type="text"
@@ -52,6 +54,8 @@ export default function Layout() {
               placeholder="Tìm kiếm..."
             />
           </div>
+
+          {/* Auth Area */}
           <div className="auth-area">
             {user ? (
               <div className="user-info">
@@ -61,9 +65,18 @@ export default function Layout() {
                 </button>
               </div>
             ) : (
-              <Link to="/login" className="btn btn-login">
-                Đăng nhập
-              </Link>
+              <div className="auth-buttons">
+                <Link to="/login" className="btn btn-login">
+                  Đăng nhập
+                </Link>
+                <Link
+                  to="/register"
+                  className="btn btn-register"
+                  style={{ marginLeft: "10px" }}
+                >
+                  Đăng ký
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -92,10 +105,16 @@ export default function Layout() {
           </li>
         </ul>
       </nav>
+
+      {/* Hero Slider */}
       <HeroSlider />
+
+      {/* Main Content */}
       <main className="main-content">
         <Outlet />
       </main>
+
+      {/* Footer */}
       <footer className="footer">
         <div className="footer-container">
           {/* Cột 1: Liên hệ */}

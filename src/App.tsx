@@ -6,6 +6,8 @@ import ListProducts_SP from "./ListProducts_SP";
 // @ts-ignore
 import Chitietsanpham from "./Chitietsanpham";
 // @ts-ignore
+import RegisterPage from "./RegisterPage";
+// @ts-ignore
 import LoginPage from "./LoginPage";
 // @ts-ignore
 import LogoutPage from "./LogoutPage";
@@ -17,6 +19,10 @@ import ListProducts_SP_Admin from "./ListProducts_SP_Admin";
 import EditProduct from "./EditProducts";
 
 // Trang menu người dùng
+// @ts-ignore
+import OrdersPage from './OrdersPage';
+// @ts-ignore
+import CartPage from './CartPage';
 // @ts-ignore
 import BoSuuTap from "./BoSuuTap";
 // @ts-ignore
@@ -37,15 +43,13 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          {/* Trang chính */}
           <Route index element={<ListProducts_SP />} />
-          {/* Trang chi tiết sản phẩm */}
           <Route path="sanpham/:id" element={<Chitietsanpham />} />
-          {/* Trang admin edit sản phẩm */}
           <Route path="/admin/edit/:id" element={<EditProduct />} />
           {/* Trang auth */}
           <Route path="login" element={<LoginPage />} />
           <Route path="logout" element={<LogoutPage />} />
+          <Route path="register" element={<RegisterPage />} />
           {/* Trang admin quản lý sản phẩm */}
           <Route
             path="admin/products"
@@ -56,9 +60,10 @@ export default function App() {
             }
           />
           {/* Các trang menu người dùng */}
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="cart" element={<CartPage />} />
           <Route path="bosuutap" element={<BoSuuTap />} />
-          <Route path="bosuutap/:id" element={<BoSuuTapDetail />} />{" "}
-          {/* Chi tiết bộ sưu tập */}
+          <Route path="bosuutap/:id" element={<BoSuuTapDetail />} />
           <Route path="muasam" element={<MuaSam />} />
           <Route path="khuyenmai" element={<KhuyenMai />} />
           <Route path="tintuc" element={<TinTuc />} />

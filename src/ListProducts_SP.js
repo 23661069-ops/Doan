@@ -3,18 +3,34 @@ import { useNavigate } from "react-router-dom";
 import supabase from "./supabaseClient";
 
 export default function ListProducts_SP() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const load = async () => {
       const { data, error } = await supabase.from("product1").select("*");
-      if (!error) setProducts(data);
+
+      if (error) {
+        console.error("Lỗi Supabase:", error);
+        setProducts([]); // tránh null
+        return;
+      }
+
+      if (!data) {
+        setProducts([]); // tránh null
+      } else {
+        setProducts(Array.isArray(data) ? data : []); // ép về mảng
+      }
     };
+
     load();
   }, []);
 
-  if (!products || products.length === 0) return <p>Đang tải sản phẩm...</p>;
+  // Khi đang load (products = null)
+  if (products === null) return <p>Đang tải sản phẩm...</p>;
+
+  // Khi không có sản phẩm
+  if (products.length === 0) return <p>Không có sản phẩm!</p>;
 
   return (
     <div style={{ padding: 20 }}>
