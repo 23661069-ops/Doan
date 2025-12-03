@@ -21,6 +21,8 @@ export default function Layout() {
     navigate("/login");
   };
 
+  const role = user?.role || null;
+
   return (
     <div className="main-wrapper">
       {/* Top Bar */}
@@ -103,6 +105,18 @@ export default function Layout() {
           <li className="nav-item">
             <Link to="/lienhe">LIÊN HỆ</Link>
           </li>
+
+          {/* Nút Dashboard Admin chỉ hiển thị nếu là admin */}
+          {role === "admin" && (
+            <li className="nav-item">
+              <Link
+                to="/admin/dashboard"
+                style={{ fontWeight: "bold", color: "red" }}
+              >
+                Dashboard Admin
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
 
