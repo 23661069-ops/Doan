@@ -14,15 +14,17 @@ import LogoutPage from "./LogoutPage";
 // @ts-ignore
 import ProtectedRoute from "./ProtectedRoute";
 // @ts-ignore
-import ListProducts_SP_Admin from "./ListProducts_SP_Admin";
+import Dashboard_Admin from "./admin/Dashboard_Admin";
 // @ts-ignore
-import EditProduct from "./EditProducts";
+import ListProducts_SP_Admin from "./admin/ListProducts_SP_Admin";
+// @ts-ignore
+import EditProduct_Admin from "./admin/EditProduct_Admin";
 
 // Trang menu người dùng
 // @ts-ignore
-import OrdersPage from './OrdersPage';
+import OrdersPage from "./OrdersPage";
 // @ts-ignore
-import CartPage from './CartPage';
+import CartPage from "./CartPage";
 // @ts-ignore
 import BoSuuTap from "./BoSuuTap";
 // @ts-ignore
@@ -43,24 +45,30 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
+          {/* Trang người dùng */}
           <Route index element={<ListProducts_SP />} />
           <Route path="sanpham/:id" element={<Chitietsanpham />} />
-          <Route path="/admin/edit/:id" element={<EditProduct />} />
+
+          {/* Admin Panel */}
+          <Route
+            path="admin"
+            element={
+              <ProtectedRoute>
+                <Dashboard_Admin />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="products" element={<ListProducts_SP_Admin />} />
+            <Route path="edit/:id" element={<EditProduct_Admin />} />
+          </Route>
+
           {/* Trang auth */}
           <Route path="login" element={<LoginPage />} />
           <Route path="logout" element={<LogoutPage />} />
           <Route path="register" element={<RegisterPage />} />
-          {/* Trang admin quản lý sản phẩm */}
-          <Route
-            path="admin/products"
-            element={
-              <ProtectedRoute>
-                <ListProducts_SP_Admin />
-              </ProtectedRoute>
-            }
-          />
+
           {/* Các trang menu người dùng */}
-          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="orders" element={<OrdersPage />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="bosuutap" element={<BoSuuTap />} />
           <Route path="bosuutap/:id" element={<BoSuuTapDetail />} />

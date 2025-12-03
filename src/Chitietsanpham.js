@@ -18,9 +18,9 @@ export default function Chitietsanpham() {
 
         if (error) throw error;
         setProduct(data);
-        setLoading(false);
       } catch (err) {
         console.error("Lỗi khi tải sản phẩm:", err.message);
+      } finally {
         setLoading(false);
       }
     };
@@ -29,9 +29,29 @@ export default function Chitietsanpham() {
   }, [id]);
 
   const addToCart = () => {
-    // Demo: lưu vào localStorage
+    if (!product) return;
+
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    cart.push(product);
+
+    const existingIndex = cart.findIndex((item) => item.id === product.id);
+
+    if (existingIndex !== -1) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name || product.title || "Sản phẩm",
+        price: product.price || 0,
+        image_url:
+          product.image ||
+          product.image_url ||
+          product.img ||
+          product.url ||
+          "",
+        quantity: 1,
+      });
+    }
+
     localStorage.setItem("cart", JSON.stringify(cart));
     alert("Đã thêm vào giỏ hàng!");
   };
@@ -40,46 +60,37 @@ export default function Chitietsanpham() {
   if (!product) return <p>Sản phẩm không tồn tại.</p>;
 
   return (
-    <div style={{ padding: 20, display: "flex", gap: 20, flexWrap: "wrap" }}>
-      {/* Ảnh sản phẩm */}
-      <div style={{ flex: "1 1 300px" }}>
-        {product.image ? (
-          <img
-            src={product.image}
-            alt={product.title}
-            style={{ width: "100%", borderRadius: 8, objectFit: "cover" }}
-          />
-        ) : (
-          <div
-            style={{
-              width: "100%",
-              height: 300,
-              backgroundColor: "#eee",
-              borderRadius: 8,
-            }}
-          />
-        )}
+    <div style={{ padding: 20, display: "flex", gap: 20 }}>
+      <div style={{ width: "350px" }}>
+        <img
+          src={
+            product.image ||
+            product.image_url ||
+            product.img ||
+            product.url ||
+            ""
+          }
+          alt={product.name}
+          style={{ width: "100%", borderRadius: 8 }}
+        />
       </div>
 
-      {/* Thông tin sản phẩm */}
-      <div style={{ flex: "1 1 300px" }}>
-        <h2>{product.title}</h2>
-        <p style={{ color: "#e63946", fontWeight: "bold", fontSize: "1.5rem" }}>
-          Giá: ${product.price}
+      <div>
+        <h2>{product.name}</h2>
+        <p style={{ color: "red", fontWeight: "bold", fontSize: "20px" }}>
+          Giá: {product.price?.toLocaleString("vi-VN")}₫
         </p>
-        <p style={{ marginTop: 10 }}>{product.description}</p>
+        <p>{product.description}</p>
 
         <button
           onClick={addToCart}
           style={{
-            marginTop: 20,
             padding: "10px 20px",
-            backgroundColor: "#a02020",
-            color: "#fff",
+            background: "#a02020",
+            color: "white",
             border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
             borderRadius: 5,
+            cursor: "pointer",
           }}
         >
           Thêm vào giỏ hàng

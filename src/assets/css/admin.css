@@ -1,0 +1,84 @@
+.admin-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f2f4f7;
+}
+
+.admin-main {
+  display: flex;
+  flex: 1;
+  margin: 20px auto;
+  max-width: 1200px;
+}
+
+.admin-sidebar {
+  width: 240px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  margin-right: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  transition: width 0.3s;
+}
+
+.admin-sidebar.collapsed {
+  width: 60px;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggle-btn {
+  font-size: 0.9rem;
+  padding: 4px 8px;
+}
+
+.sidebar-stats {
+  margin: 15px 0;
+  font-size: 0.9rem;
+}
+
+.sidebar-stats p {
+  margin: 5px 0;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-menu li {
+  margin: 12px 0;
+}
+
+.sidebar-menu li a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 500;
+  display: block;
+}
+
+.sidebar-menu li a:hover {
+  text-decoration: underline;
+}
+
+.admin-content {
+  flex: 1;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Collapsed sidebar text */
+.admin-sidebar.collapsed h3,
+.admin-sidebar.collapsed .sidebar-stats,
+.admin-sidebar.collapsed .sidebar-menu li a {
+  display: none;
+}
+
+/* Table sản phẩm và form thêm/sửa giữ nguyên CSS cũ */

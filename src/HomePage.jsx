@@ -3,165 +3,172 @@ import React, { useState, useEffect } from "react";
 const slides = [
   {
     id: 1,
-    title: "Bộ sưu tập FW2025",
-    subtitle: "Phong cách thời thượng",
-    image: "banner",
-    dummyText: "Slide 1",
+    title: "Fall / Winter 2025",
+    subtitle: "Khám phá phong cách thời trang mới",
+    image: "banner.jpg",
   },
   {
     id: 2,
-    title: "Khuyến mãi đặc biệt",
-    subtitle: "Giảm giá lên đến 50%",
-    image: "/path/to/your/image_2.jpg",
-    dummyText: "Slide 2",
+    title: "Ưu đãi độc quyền",
+    subtitle: "Giảm đến 50% – Áp dụng toàn bộ cửa hàng",
+    image: "/img/slide2.jpg",
   },
   {
     id: 3,
-    title: "Sản phẩm mới",
-    subtitle: "Thời trang mùa đông",
-    image: "/path/to/your/image_3.jpg",
-    dummyText: "Slide 3",
+    title: "New Arrival 2025",
+    subtitle: "Những thiết kế thời trang mới nhất",
+    image: "/img/slide3.jpg",
   },
 ];
+
 const sliderStyles = `
 .hero-slider-container {
   position: relative;
   width: 100%;
-  height: 550px; 
-  overflow: hidden; /* Quan trọng: ẩn các slide không hoạt động */
-  background-color: #f0e8d9; 
+  height: 650px;
+  overflow: hidden;
+  background-color: #000;
 }
+
 .hero-slide {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
+  transform: scale(1.08);
+  transition: opacity 1.2s ease, transform 1.8s ease;
 }
 
 .hero-slide.active {
-  opacity: 1; 
-  z-index: 10; 
+  opacity: 1;
+  transform: scale(1);
 }
 
 .slide-content-wrapper {
+  inset: 0;
   width: 100%;
   height: 100%;
   background-size: cover;
   background-position: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   position: relative;
 }
-.slide-dummy-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 25rem; 
-    color: rgba(48, 48, 48, 0.9); 
-    font-weight: 900;
-    z-index: 5; 
-    line-height: 1;
-    pointer-events: none; 
-}
-.overlay {
-  position: relative; 
-  text-align: center;
-  color: #303030;
-  z-index: 20; 
+
+.overlay-blur {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.05),
+    rgba(0,0,0,0.25),
+    rgba(0,0,0,0.6)
+  );
 }
 
-.overlay h2 {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
+.text-box {
+  position: absolute;
+  bottom: 18%;
+  left: 10%;
+  color: #fff;
+  z-index: 20;
+  animation: fadeUp 1.2s ease forwards;
+  opacity: 0;
 }
 
-.overlay p {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
+.hero-slide.active .text-box {
+  opacity: 1;
+}
+
+.text-box h2 {
+  font-size: 4rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.text-box p {
+  font-size: 1.4rem;
+  margin: 12px 0 25px;
+  max-width: 600px;
 }
 
 .cta-button {
-  padding: 10px 20px;
-  background-color: #a02020; 
-  color: white;
+  padding: 12px 26px;
+  background: linear-gradient(120deg, #a02020, #e63946);
+  color: #fff;
   border: none;
+  font-size: 1.1rem;
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
+  border-radius: 50px;
   text-transform: uppercase;
+  transition: transform .2s ease;
 }
+
+.cta-button:hover {
+  transform: scale(1.06);
+}
+
 .prev, .next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255,255,255,0.2);
   border: none;
   cursor: pointer;
-  padding: 15px 10px;
-  font-size: 1.5rem;
+  padding: 12px 15px;
+  font-size: 2.2rem;
   z-index: 30;
-  color: #303030;
-  opacity: 0.6;
+  color: white;
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
 }
 
-.prev { left: 20px; }
-.next { right: 20px; }
+.prev { left: 30px; }
+.next { right: 30px; }
 
 .dots {
   position: absolute;
-  bottom: 20px;
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background-color: #fff;
-  opacity: 0.5;
+  background-color: rgba(255,255,255,0.5);
   cursor: pointer;
-  border: 1px solid #303030;
-  transition: all 0.3s;
+  transition: 0.3s;
 }
 
 .dot.active {
-  opacity: 1;
-  background-color: #a02020; 
+  background-color: #e63946;
+  transform: scale(1.3);
+}
+
+@keyframes fadeUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 `;
 
 export default function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const length = slides.length;
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % length);
     }, 5000);
     return () => clearInterval(interval);
   }, [length]);
+
   useEffect(() => {
     const styleTag = document.createElement("style");
     styleTag.textContent = sliderStyles;
-    styleTag.setAttribute("id", "hero-slider-styles");
     document.head.appendChild(styleTag);
-
-    return () => {
-      const existingStyle = document.getElementById("hero-slider-styles");
-      if (existingStyle) {
-        document.head.removeChild(existingStyle);
-      }
-    };
   }, []);
 
   const nextSlide = () => setCurrent((prev) => (prev + 1) % length);
@@ -178,11 +185,12 @@ export default function HeroSlider() {
             className="slide-content-wrapper"
             style={{ backgroundImage: `url(${slide.image})` }}
           >
-            <div className="slide-dummy-text">{slide.dummyText}</div>
-            <div className="overlay">
+            <div className="overlay-blur"></div>
+
+            <div className="text-box">
               <h2>{slide.title}</h2>
               <p>{slide.subtitle}</p>
-              <button className="cta-button">Khám phá</button>
+              <button className="cta-button">Khám phá ngay</button>
             </div>
           </div>
         </div>
