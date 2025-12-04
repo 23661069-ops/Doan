@@ -19,6 +19,10 @@ import Dashboard_Admin from "./admin/Dashboard_Admin";
 import ListProducts_SP_Admin from "./admin/ListProducts_SP_Admin";
 // @ts-ignore
 import EditProduct_Admin from "./admin/EditProduct_Admin";
+// @ts-ignore
+import AdminUsersPage from "./admin/AdminUsersPage";
+// @ts-ignore
+import AdminOrdersPage from "./admin/AdminOrdersPage";
 
 // Trang menu người dùng
 // @ts-ignore
@@ -45,37 +49,133 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          {/* Trang người dùng */}
-          <Route index element={<ListProducts_SP />} />
-          <Route path="sanpham/:id" element={<Chitietsanpham />} />
-
-          {/* Admin Panel */}
+          {/* Trang người dùng, chỉ cần user đăng nhập */}
           <Route
-            path="admin"
+            index
             element={
-              <ProtectedRoute>
+              <ProtectedRoute adminOnly={false}>
+                <ListProducts_SP />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="sanpham/:id"
+            element={
+              <ProtectedRoute adminOnly={false}>
+                <Chitietsanpham />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="orders"
+            element={
+              <ProtectedRoute adminOnly={false}>
+                <OrdersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="cart"
+            element={
+              <ProtectedRoute adminOnly={false}>
+                <CartPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="bosuutap"
+            element={
+              <ProtectedRoute adminOnly={false}>
+                <BoSuuTap />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="bosuutap/:id"
+            element={
+              <ProtectedRoute adminOnly={false}>
+                <BoSuuTapDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="muasam"
+            element={
+              <ProtectedRoute adminOnly={false}>
+                <MuaSam />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="khuyenmai"
+            element={
+              <ProtectedRoute adminOnly={false}>
+                <KhuyenMai />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="tintuc"
+            element={
+              <ProtectedRoute adminOnly={false}>
+                <TinTuc />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="lienhe"
+            element={
+              <ProtectedRoute adminOnly={false}>
+                <LienHe />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Panel: chỉ admin mới được truy cập */}
+          <Route
+            path="admin/dashboard"
+            element={
+              <ProtectedRoute adminOnly={true}>
                 <Dashboard_Admin />
               </ProtectedRoute>
             }
-          >
-            <Route path="products" element={<ListProducts_SP_Admin />} />
-            <Route path="edit/:id" element={<EditProduct_Admin />} />
-          </Route>
-
+          />
+          <Route
+            path="admin/products"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <ListProducts_SP_Admin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="admin/edit/:id"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <EditProduct_Admin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="admin/users"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <AdminUsersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="admin/orders"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <AdminOrdersPage />
+              </ProtectedRoute>
+            }
+          />
           {/* Trang auth */}
           <Route path="login" element={<LoginPage />} />
           <Route path="logout" element={<LogoutPage />} />
           <Route path="register" element={<RegisterPage />} />
-
-          {/* Các trang menu người dùng */}
-          <Route path="orders" element={<OrdersPage />} />
-          <Route path="cart" element={<CartPage />} />
-          <Route path="bosuutap" element={<BoSuuTap />} />
-          <Route path="bosuutap/:id" element={<BoSuuTapDetail />} />
-          <Route path="muasam" element={<MuaSam />} />
-          <Route path="khuyenmai" element={<KhuyenMai />} />
-          <Route path="tintuc" element={<TinTuc />} />
-          <Route path="lienhe" element={<LienHe />} />
         </Route>
       </Routes>
     </BrowserRouter>

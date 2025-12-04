@@ -1,49 +1,89 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Logo from "./assets/images/Logo.png";
-import "./assets/css/login.css";
+import supabase from "./supabaseClient";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    // Lấy dữ liệu user đã đăng ký
-    const storedUser = localStorage.getItem("user_data");
-    if (!storedUser) {
-      alert("Chưa có tài khoản, vui lòng đăng ký!");
-      return;
-    }
+    try {
+      // 1️⃣ Đăng nhập bằng Supabase (password gốc)
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
 
-    const user = JSON.parse(storedUser);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
 
-    if (username === user.username && password === user.password) {
-      // Lưu session user hiện tại
-      localStorage.setItem("user", JSON.stringify({ username }));
-      alert("Đăng nhập thành công!");
-      navigate("/"); // quay về trang chủ
-    } else {
-      alert("Sai tên đăng nhập hoặc mật khẩu!");
+      if (data?.user) {
+        // 2️⃣ Kiểm tra email đã xác nhận chưa
+        if (!data.user.email_confirmed_at) {
+          toast.info("Vui lòng xác nhận email trước khi đăng nhập!");
+          return;
+        }
+
+        // 3️⃣ Lấy thêm password_hash từ bảng users (để minh họa đồ án)
+        const { data: userData, error: fetchError } = await supabase
+          .from("users")
+          .select("password_hash, role")
+          .eq("id", data.user.id)
+          .single();
+
+        if (fetchError) {
+          console.warn("Không lấy được hash từ bảng users:", fetchError.message);
+        }
+
+        const userInfo = {
+          email: data.user.email,
+          id: data.user.id,
+          role: userData?.role || data.user.user_metadata?.role || "user",
+          passwordHash: userData?.password_hash || null,
+        };
+
+        // 4️⃣ Lưu thông tin user vào localStorage
+        localStorage.setItem("user", JSON.stringify(userInfo));
+
+        toast.success("Đăng nhập thành công!");
+
+        // 5️⃣ Redirect theo role
+        if (userInfo.role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
+      } else {
+        toast.error("Không thể đăng nhập, thử lại sau.");
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      toast.error("Có lỗi xảy ra, thử lại sau.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-wrapper">
       <div className="login-card">
-        <img src={Logo} alt="Logo" className="login-logo" />
-        <h2 className="login-title">Đăng nhập</h2>
-        <p className="login-subtitle">Đăng nhập để tiếp tục mua sắm</p>
-
-        <form className="login-form" onSubmit={handleLogin}>
+        <h2>Đăng nhập</h2>
+        <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label>Tên đăng nhập</label>
+            <label>Email</label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -58,10 +98,12 @@ export default function LoginPage() {
             />
           </div>
 
-          <button type="submit">Đăng nhập</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+          </button>
         </form>
 
-        <p className="register-link">
+        <p>
           Chưa có tài khoản? <a href="/register">Đăng ký</a>
         </p>
       </div>

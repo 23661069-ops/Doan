@@ -1,34 +1,40 @@
-
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import supabase from "./supabaseClient";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const LogoutPage = () => {
+export default function LogoutPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.removeItem("user");
-    const timer = setTimeout(() => {
-      navigate("/login", { replace: true });
-    }, 2000);
+    const logout = async () => {
+      try {
+        // Xóa session Supabase
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          console.error("Supabase logout error:", error);
+          toast.error("Đăng xuất thất bại. Thử lại.");
+        } else {
+          // Xóa user trong localStorage
+          localStorage.removeItem("user");
+          toast.success("Đăng xuất thành công!");
+          navigate("/login");
+        }
+      } catch (err) {
+        console.error("Unexpected error during logout:", err);
+        toast.error("Có lỗi xảy ra. Thử lại.");
+      }
+    };
 
-    return () => clearTimeout(timer);
+    logout();
   }, [navigate]);
 
   return (
-    <div className="flex justify-center items-center min-h-[70vh] bg-gray-50">
-      <div className="bg-white shadow-md rounded-2xl p-8 w-96 text-center border border-gray-200">
-        <h2 className="text-2xl font-semibold text-blue-600 mb-4">
-          👋 Đăng xuất thành công!
-        </h2>
-        <p className="text-gray-600 mb-2">
-          Phiên đăng nhập của bạn đã được kết thúc.
-        </p>
-        <p className="text-gray-500 text-sm">
-          Đang chuyển hướng đến trang đăng nhập...
-        </p>
+    <div className="login-wrapper">
+      <div className="login-card">
+        <h2>Đang đăng xuất...</h2>
       </div>
     </div>
   );
-};
-
-export default LogoutPage;
+}
