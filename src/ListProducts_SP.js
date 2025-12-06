@@ -12,29 +12,23 @@ export default function ListProducts_SP() {
 
       if (error) {
         console.error("Lỗi Supabase:", error);
-        setProducts([]); // tránh null
+        setProducts([]);
         return;
       }
 
-      if (!data) {
-        setProducts([]); // tránh null
-      } else {
-        setProducts(Array.isArray(data) ? data : []); // ép về mảng
-      }
+      setProducts(Array.isArray(data) ? data : []);
     };
 
     load();
   }, []);
 
-  // Khi đang load (products = null)
   if (products === null) return <p>Đang tải sản phẩm...</p>;
-
-  // Khi không có sản phẩm
   if (products.length === 0) return <p>Không có sản phẩm!</p>;
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Sản phẩm</h1>
+      <h1 style={{ marginBottom: 20 }}>Sản phẩm</h1>
+
       <div
         style={{
           display: "grid",
@@ -46,43 +40,74 @@ export default function ListProducts_SP() {
           <div
             key={p.id}
             style={{
-              border: "1px solid #ccc",
-              borderRadius: 8,
-              padding: 10,
+              border: "1px solid #ddd",
+              borderRadius: 10,
+              padding: 12,
+              background: "#fff",
               textAlign: "center",
               cursor: "pointer",
-              background: "#fff",
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              transition: "transform 0.2s",
+              transition: "transform 0.2s, box-shadow 0.2s",
+              display: "flex",
+              flexDirection: "column",
             }}
             onClick={() => navigate(`/sanpham/${p.id}`)}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "translateY(-4px)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "translateY(0)")
-            }
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+            }}
           >
+            {/* Hình sản phẩm */}
             <img
               src={p.image || "/placeholder.png"}
               alt={p.title}
               style={{
                 width: "100%",
-                height: 150,
+                height: 160,
                 objectFit: "cover",
-                borderRadius: 4,
+                borderRadius: 8,
               }}
             />
-            <h3 style={{ margin: "10px 0 5px" }}>{p.title}</h3>
+
+            {/* Tên sản phẩm (Rút gọn 1 dòng) */}
+            <h3
+              style={{
+                margin: "10px 0 5px",
+                fontSize: "1rem",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+              title={p.title}
+            >
+              {p.title}
+            </h3>
+
+            {/* Giá sản phẩm */}
             <p style={{ color: "#e63946", fontWeight: "bold" }}>
-              Giá: ${p.price}
+              {p.price ? p.price.toLocaleString("vi-VN") : "0"}₫
             </p>
+
+            {/* Nút xem chi tiết luôn dưới cùng */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(`/sanpham/${p.id}`);
               }}
-              style={{ marginTop: 10, padding: "5px 10px", cursor: "pointer" }}
+              style={{
+                marginTop: "auto",
+                padding: "8px 12px",
+                cursor: "pointer",
+                background: "#222",
+                color: "white",
+                border: "none",
+                borderRadius: 5,
+                fontSize: "0.9rem",
+              }}
             >
               Xem chi tiết
             </button>

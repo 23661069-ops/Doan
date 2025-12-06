@@ -1,52 +1,59 @@
-/* 🌐 Modern Login Style inspired by Google / Facebook (2025) */
-@import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&display=swap");
+/* 🌐 Modern Material 3 + Glassmorphism (2025) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 
 body {
-  font-family: "Google Sans", Roboto, sans-serif;
-  background: #f7f9fc;
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(135deg, #eef1f7, #dde3ee);
   margin: 0;
   padding: 0;
 }
 
+/* Căn giữa toàn trang */
 .login-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 90vh;
+  min-height: 100vh;
+  padding: 20px;
 }
 
+/* Form glass */
 .login-card {
-  background: #fff;
   width: 380px;
-  padding: 40px 36px;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 34px 32px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 32px rgba(145, 158, 171, 0.25);
   text-align: center;
-  transition: transform 0.2s ease;
+  animation: fadeUp 0.4s ease-out;
 }
 
-.login-card:hover {
-  transform: translateY(-3px);
-}
-
+/* Logo */
 .login-logo {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 8px;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 10px;
 }
 
+/* Tiêu đề */
 .login-title {
-  font-size: 22px;
-  color: #202124;
-  margin: 6px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f1f1f;
+  margin-bottom: 6px;
 }
 
+/* Dòng mô tả */
 .login-subtitle {
-  color: #5f6368;
+  color: #556;
   font-size: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
+/* Form */
 .login-form {
   text-align: left;
   display: flex;
@@ -55,43 +62,49 @@ body {
 }
 
 .form-group label {
-  font-size: 13px;
-  color: #555;
-  margin-bottom: 4px;
-  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #333;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
   width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #dadce0;
-  border-radius: 8px;
+  padding: 13px 14px;
   font-size: 15px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(180, 185, 195, 0.5);
   outline: none;
-  transition: 0.2s;
+  transition: 0.2s ease;
 }
 
-.form-group input:focus {
-  border-color: #1a73e8;
-  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+/* Hiệu ứng khi focus */
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #6a5af9;
+  box-shadow: 0 0 0 3px rgba(130, 120, 255, 0.25);
 }
 
+/* Nút submit */
 button[type="submit"] {
   width: 100%;
-  margin-top: 8px;
-  padding: 12px 0;
-  background: #1a73e8;
-  color: white;
+  padding: 14px;
+  background: linear-gradient(135deg, #6a5af9, #7c6af8);
   border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 15px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
+  margin-top: 4px;
   transition: 0.25s ease;
+  box-shadow: 0 4px 14px rgba(106, 90, 249, 0.32);
 }
 
 button[type="submit"]:hover {
-  background: #1669c1;
+  background: linear-gradient(135deg, #5b4df3, #6b5cf0);
 }
 
 button[disabled] {
@@ -99,24 +112,26 @@ button[disabled] {
   cursor: not-allowed;
 }
 
+/* Link dưới */
 .register-link {
-  margin-top: 18px;
-  font-size: 13.5px;
-  color: #5f6368;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
 }
 
 .register-link a {
-  color: #1a73e8;
+  color: #6a5af9;
   text-decoration: none;
+  font-weight: 500;
 }
 
 .register-link a:hover {
   text-decoration: underline;
 }
 
-/* --- Social Buttons --- */
+/* Social login mới đẹp */
 .social-login {
-  margin-top: 24px;
+  margin-top: 26px;
   display: flex;
   justify-content: center;
   gap: 12px;
@@ -126,15 +141,14 @@ button[disabled] {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
-  border: 1px solid #dadce0;
-  border-radius: 8px;
-  background: #fff;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(200, 200, 210, 0.4);
   font-size: 14px;
-  font-weight: 500;
-  color: #3c4043;
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition: 0.25s ease;
 }
 
 .social-btn img {
@@ -143,13 +157,18 @@ button[disabled] {
 }
 
 .social-btn:hover {
-  background: #f1f3f4;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
-.google span {
-  color: #202124;
-}
-
-.facebook span {
-  color: #1877f2;
+/* Animation */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

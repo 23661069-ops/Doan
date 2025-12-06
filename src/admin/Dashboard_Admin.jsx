@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import supabase from "../supabaseClient";
 import "../assets/css/admin.css";
+import { Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,7 +19,6 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
-import { Bar, Pie } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
@@ -38,17 +38,12 @@ export default function Dashboard_Admin() {
     users: 0,
     admins: 0,
   });
-  const [userBarData, setUserBarData] = useState({ labels: [], datasets: [] });
-  const [userPieData, setUserPieData] = useState({ labels: [], datasets: [] });
-  const [orderBarData, setOrderBarData] = useState({
-    labels: [],
-    datasets: [],
-  });
-  const [orderPieData, setOrderPieData] = useState({
-    labels: [],
-    datasets: [],
-  });
+  const [userBarData, setUserBarData] = useState(null);
+  const [userPieData, setUserPieData] = useState(null);
+  const [orderBarData, setOrderBarData] = useState(null);
+  const [orderPieData, setOrderPieData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [adminName, setAdminName] = useState("");
 
   const fetchStats = async () => {
     setLoading(true);
@@ -59,7 +54,7 @@ export default function Dashboard_Admin() {
       const { data: ordersData } = await supabase.from("orders").select("*");
       const { data: usersData } = await supabase
         .from("users")
-        .select("role, created_at, email_confirmed_at");
+        .select("username, role, created_at, email_confirmed_at");
 
       const userCount = usersData.filter((u) => u.role === "user").length;
       const adminCount = usersData.filter((u) => u.role === "admin").length;
@@ -71,7 +66,10 @@ export default function Dashboard_Admin() {
         admins: adminCount,
       });
 
-      // Bar chart user theo tháng
+      // Lấy admin đăng nhập
+      const localUser = JSON.parse(localStorage.getItem("user"));
+      if (localUser?.role === "admin") setAdminName(localUser.username);
+
       const monthLabels = [
         "Jan",
         "Feb",
@@ -102,11 +100,10 @@ export default function Dashboard_Admin() {
         ],
       });
 
-      // Pie chart email xác nhận
       const confirmed = usersData.filter((u) => u.email_confirmed_at).length;
       const notConfirmed = usersData.length - confirmed;
       setUserPieData({
-        labels: ["Email xác nhận", "Chưa xác nhận"],
+        labels: ["Đã xác nhận", "Chưa xác nhận"],
         datasets: [
           {
             data: [confirmed, notConfirmed],
@@ -115,7 +112,6 @@ export default function Dashboard_Admin() {
         ],
       });
 
-      // Bar chart orders theo tháng
       const orderMonthCounts = Array(12).fill(0);
       ordersData.forEach((o) => {
         const d = new Date(o.created_at);
@@ -125,14 +121,13 @@ export default function Dashboard_Admin() {
         labels: monthLabels,
         datasets: [
           {
-            label: "Số đơn hàng",
+            label: "Đơn hàng",
             data: orderMonthCounts,
             backgroundColor: "#FFBB28",
           },
         ],
       });
 
-      // Pie chart orders theo trạng thái
       const pending = ordersData.filter((o) => o.status === "pending").length;
       const completed = ordersData.filter(
         (o) => o.status === "completed"
@@ -179,38 +174,21 @@ export default function Dashboard_Admin() {
 
         {!collapsed && !loading && (
           <div className="sidebar-stats">
-            <div className="stat-card products">
-              <FaBoxOpen size={24} />
-              <div>
-                <p>Sản phẩm</p>
-                <h3>{stats.products}</h3>
+            {["products", "orders", "users", "admins"].map((key, i) => (
+              <div key={i} className={`stat-card ${key}`}>
+                {key === "products" && <FaBoxOpen size={24} />}
+                {key === "orders" && <FaShoppingCart size={24} />}
+                {key === "users" && <FaUserShield size={24} />}
+                {key === "admins" && <FaUserShield size={24} />}
+                <div>
+                  <p>{key.charAt(0).toUpperCase() + key.slice(1)}</p>
+                  <h3>{stats[key]}</h3>
+                </div>
               </div>
-            </div>
-            <div className="stat-card orders">
-              <FaShoppingCart size={24} />
-              <div>
-                <p>Đơn hàng</p>
-                <h3>{stats.orders}</h3>
-              </div>
-            </div>
-            <div className="stat-card users">
-              <FaUserShield size={24} />
-              <div>
-                <p>Users</p>
-                <h3>{stats.users}</h3>
-              </div>
-            </div>
-            <div className="stat-card admins">
-              <FaUserShield size={24} />
-              <div>
-                <p>Admins</p>
-                <h3>{stats.admins}</h3>
-              </div>
-            </div>
+            ))}
           </div>
         )}
 
-        {/* Menu */}
         <ul className="sidebar-menu">
           <li>
             <Link to="/admin/products">
@@ -233,50 +211,70 @@ export default function Dashboard_Admin() {
       {/* Main content */}
       <main className="admin-content">
         {!loading && (
-          <>
-            <div style={{ marginBottom: "30px" }}>
-              <h4>User: Đăng ký theo tháng</h4>
-              <Bar
-                data={userBarData}
-                options={{
-                  responsive: true,
-                  plugins: { legend: { display: true } },
-                }}
-              />
-            </div>
-            <div style={{ marginBottom: "30px" }}>
-              <h4>User: Email xác nhận / chưa xác nhận</h4>
-              <Pie
-                data={userPieData}
-                options={{
-                  responsive: true,
-                  plugins: { legend: { position: "bottom" } },
-                }}
-              />
-            </div>
-            <div style={{ marginBottom: "30px" }}>
-              <h4>Orders: Theo tháng</h4>
-              <Bar
-                data={orderBarData}
-                options={{
-                  responsive: true,
-                  plugins: { legend: { display: true } },
-                }}
-              />
-            </div>
-            <div style={{ marginBottom: "30px" }}>
-              <h4>Orders: Theo trạng thái</h4>
-              <Pie
-                data={orderPieData}
-                options={{
-                  responsive: true,
-                  plugins: { legend: { position: "bottom" } },
-                }}
-              />
-            </div>
-          </>
+          <div className="admin-welcome">
+            <h2>Xin chào, {adminName || "Admin"}</h2>
+          </div>
         )}
-        <Outlet /> {/* render AdminUsersPage hoặc AdminOrdersPage */}
+
+        {!loading ? (
+          <>
+            <section className="chart-section">
+              <h4>User: Đăng ký theo tháng</h4>
+              {userBarData && (
+                <Bar
+                  data={userBarData}
+                  options={{
+                    responsive: true,
+                    plugins: { legend: { display: true } },
+                  }}
+                />
+              )}
+            </section>
+
+            <section className="chart-section">
+              <h4>User: Email xác nhận / chưa xác nhận</h4>
+              {userPieData && (
+                <Pie
+                  data={userPieData}
+                  options={{
+                    responsive: true,
+                    plugins: { legend: { position: "bottom" } },
+                  }}
+                />
+              )}
+            </section>
+
+            <section className="chart-section">
+              <h4>Orders: Theo tháng</h4>
+              {orderBarData && (
+                <Bar
+                  data={orderBarData}
+                  options={{
+                    responsive: true,
+                    plugins: { legend: { display: true } },
+                  }}
+                />
+              )}
+            </section>
+
+            <section className="chart-section">
+              <h4>Orders: Theo trạng thái</h4>
+              {orderPieData && (
+                <Pie
+                  data={orderPieData}
+                  options={{
+                    responsive: true,
+                    plugins: { legend: { position: "bottom" } },
+                  }}
+                />
+              )}
+            </section>
+          </>
+        ) : (
+          <p>Đang tải dữ liệu...</p>
+        )}
+
+        <Outlet />
       </main>
     </div>
   );

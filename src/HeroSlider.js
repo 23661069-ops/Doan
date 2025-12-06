@@ -24,30 +24,32 @@ const slides = [
   },
 ];
 
-const improvedStyles = `
+const shopeeHeroStyles = `
 .hero-slider-container {
   position: relative;
   width: 100%;
-  height: 550px;
+  height: 480px;
   overflow: hidden;
   font-family: 'Montserrat', sans-serif;
 }
 
-/* --- Slide fade effect --- */
+/* Slide */
 .hero-slide {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
+  transform: scale(1.05);
+  transition: opacity 0.8s ease, transform 1.2s ease;
 }
 .hero-slide.active {
   opacity: 1;
+  transform: scale(1);
   z-index: 10;
 }
 
-/* --- Background --- */
+/* Background */
 .slide-content-wrapper {
   width: 100%;
   height: 100%;
@@ -56,106 +58,108 @@ const improvedStyles = `
   position: relative;
 }
 
-/* --- Overlay mờ để nổi bật text --- */
+/* Overlay nhẹ kiểu Shopee */
 .slide-overlay-bg {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(1px);
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.15),
+    rgba(0,0,0,0.35)
+  );
   z-index: 5;
 }
 
-/* --- Text overlay --- */
+/* Text block */
 .overlay {
   position: absolute;
   z-index: 20;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: #fff;
-  animation: fadeUp 1s ease forwards;
+  bottom: 80px;
+  left: 50px;
+  color: white;
+  animation: fadeLeft 0.9s ease forwards;
   opacity: 0;
 }
-@keyframes fadeUp {
-  0% { opacity: 0; transform: translate(-50%, -40%); }
-  100% { opacity: 1; transform: translate(-50%, -50%); }
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .overlay h2 {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+  font-size: 2.8rem;
+  font-weight: 700;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.4);
 }
 
 .overlay p {
-  font-size: 1.3rem;
-  margin-bottom: 1.5rem;
-  opacity: 0.9;
+  margin: 8px 0 18px;
+  font-size: 1.25rem;
+  color: #ffecec;
 }
 
-/* --- Elegant Button --- */
+/* CTA button kiểu Shopee */
 .cta-button {
-  padding: 12px 35px;
-  border: 1px solid #fff;
-  background: transparent;
+  padding: 12px 50px;
+  background: #ff5722;
   color: #fff;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.05rem;
+  font-weight: 600;
   cursor: pointer;
   transition: 0.3s ease;
 }
 .cta-button:hover {
-  background: #fff;
-  color: #000;
+  background: #e64a19;
 }
 
-/* --- Navigation buttons --- */
+/* Left/Right arrows */
 .prev, .next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.4);
-  width: 45px;
-  height: 45px;
+  background: rgba(255,255,255,0.7);
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
   z-index: 30;
-  transition: 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.25s;
 }
 .prev:hover, .next:hover {
-  background: rgba(255,255,255,0.9);
+  background: white;
   transform: translateY(-50%) scale(1.1);
 }
-.prev { left: 20px; }
-.next { right: 20px; }
+.prev { left: 15px; }
+.next { right: 15px; }
 
-/* --- Dots --- */
+/* Dots nhỏ gọn */
 .dots {
   position: absolute;
-  bottom: 25px;
+  bottom: 22px;
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 12px;
-  z-index: 30;
+  gap: 10px;
+  z-index: 40;
 }
-
 .dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: 1px solid #fff;
-  background: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.5);
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: 0.25s;
 }
 .dot.active {
-  background: white;
+  background: #ff5722;
+  width: 22px;
+  border-radius: 20px;
 }
 .dot:hover {
   transform: scale(1.2);
@@ -167,10 +171,10 @@ export default function HeroSlider() {
   const length = slides.length;
 
   useEffect(() => {
-    if (!document.getElementById("improved-slider-styles")) {
+    if (!document.getElementById("shopee-slider-styles")) {
       const styleTag = document.createElement("style");
-      styleTag.textContent = improvedStyles;
-      styleTag.id = "improved-slider-styles";
+      styleTag.textContent = shopeeHeroStyles;
+      styleTag.id = "shopee-slider-styles";
       document.head.appendChild(styleTag);
     }
   }, []);
@@ -195,10 +199,11 @@ export default function HeroSlider() {
           >
             <div className="slide-overlay-bg"></div>
 
+            {/* Text */}
             <div className="overlay">
               <h2>{slide.title}</h2>
               <p>{slide.subtitle}</p>
-              <button className="cta-button">Khám phá</button>
+              <button className="cta-button">Khám phá ngay</button>
             </div>
           </div>
         </div>

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-// @ts-ignore
 import { useNavigate } from "react-router-dom";
 import supabase from "./supabaseClient";
+import "./assets/css/login.css";
+import logo from "./assets/images/Logo.png";
 
-// Hàm tạo hash SHA-256
 async function sha256(message) {
   const msgBuffer = new TextEncoder().encode(message);
   const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
@@ -12,6 +12,7 @@ async function sha256(message) {
 }
 
 export default function RegisterPage() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -22,20 +23,20 @@ export default function RegisterPage() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    if (!username.trim()) return alert("Vui lòng nhập username!");
     if (!email.trim()) return alert("Vui lòng nhập email hợp lệ!");
     if (password !== confirm) return alert("Mật khẩu xác nhận không khớp!");
     if (password.length < 6) return alert("Mật khẩu phải ít nhất 6 ký tự!");
 
     setLoading(true);
 
-    // 1️⃣ Tạo mã băm của mật khẩu
     const passwordHash = await sha256(password);
 
-    // 2️⃣ Đăng ký tài khoản Supabase (vẫn dùng mật khẩu gốc)
+    // Tạo user trên Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
-      options: { data: { role } },
+      options: { data: { role, username } },
     });
 
     if (error) {
@@ -44,29 +45,23 @@ export default function RegisterPage() {
       return;
     }
 
-    // 3️⃣ Lấy user id do Supabase tạo
     const userId = data.user.id;
 
-    // 4️⃣ Lưu mã băm vào bảng users
-    const { error: insertError } = await supabase
-      .from("users")
-      .insert({
-        id: userId,
-        email,
+    // Lưu vào bảng users
+    const { error: insertError } = await supabase.from("users").insert([
+      {
+        auth_id: userId,
+        username: username.trim(),
+        email: email.trim(),
         role,
         password_hash: passwordHash,
-      });
+      },
+    ]);
 
     if (insertError) {
       alert("Lỗi khi lưu vào bảng users: " + insertError.message);
     } else {
-      alert(
-        "Đăng ký thành công! Mật khẩu đã được băm theo yêu cầu đồ án."
-      );
-      setEmail("");
-      setPassword("");
-      setConfirm("");
-      setRole("user");
+      alert("Đăng ký thành công!");
       navigate("/login");
     }
 
@@ -74,51 +69,75 @@ export default function RegisterPage() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h2>Đăng ký tài khoản</h2>
-      <form onSubmit={handleRegister}>
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+    <div className="login-wrapper">
+      <div className="login-card">
+        <img src={logo} alt="logo" className="login-logo" />
 
-        <div>
-          <label>Mật khẩu</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+        <h2 className="login-title">Tạo tài khoản</h2>
+        <p className="login-subtitle">Điền thông tin để tiếp tục</p>
 
-        <div>
-          <label>Xác nhận mật khẩu</label>
-          <input
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            required
-          />
-        </div>
+        <form className="login-form" onSubmit={handleRegister}>
+          <div className="form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              placeholder="Nhập username..."
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
 
-        <div>
-          <label>Quyền người dùng</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="Nhập email..."
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Đang đăng ký..." : "Đăng ký"}
-        </button>
-      </form>
+          <div className="form-group">
+            <label>Mật khẩu</label>
+            <input
+              type="password"
+              placeholder="Nhập mật khẩu..."
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Xác nhận mật khẩu</label>
+            <input
+              type="password"
+              placeholder="Nhập lại mật khẩu..."
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Quyền người dùng</label>
+            <select value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Đang đăng ký..." : "Đăng ký"}
+          </button>
+        </form>
+
+        <div className="register-link">
+          Đã có tài khoản? <a href="/login">Đăng nhập</a>
+        </div>
+      </div>
     </div>
   );
 }
