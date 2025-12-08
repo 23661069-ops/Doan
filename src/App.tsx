@@ -24,7 +24,7 @@ import AdminUsersPage from "./admin/AdminUsersPage";
 // @ts-ignore
 import AdminOrdersPage from "./admin/AdminOrdersPage";
 
-// Trang menu người dùng
+// user pages
 // @ts-ignore
 import OrdersPage from "./OrdersPage";
 // @ts-ignore
@@ -49,130 +49,30 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          {/* Trang người dùng, chỉ cần user đăng nhập */}
-          <Route
-            index
-            element={
-              <ProtectedRoute adminOnly={false}>
-                <ListProducts_SP />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="sanpham/:id"
-            element={
-              <ProtectedRoute adminOnly={false}>
-                <Chitietsanpham />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="orders"
-            element={
-              <ProtectedRoute adminOnly={false}>
-                <OrdersPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="cart"
-            element={
-              <ProtectedRoute adminOnly={false}>
-                <CartPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="bosuutap"
-            element={
-              <ProtectedRoute adminOnly={false}>
-                <BoSuuTap />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="bosuutap/:id"
-            element={
-              <ProtectedRoute adminOnly={false}>
-                <BoSuuTapDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="muasam"
-            element={
-              <ProtectedRoute adminOnly={false}>
-                <MuaSam />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="khuyenmai"
-            element={
-              <ProtectedRoute adminOnly={false}>
-                <KhuyenMai />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="tintuc"
-            element={
-              <ProtectedRoute adminOnly={false}>
-                <TinTuc />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="lienhe"
-            element={
-              <ProtectedRoute adminOnly={false}>
-                <LienHe />
-              </ProtectedRoute>
-            }
-          />
+          {/* user area */}
+          <Route element={<ProtectedRoute adminOnly={false} />}>
+            <Route index element={<ListProducts_SP />} />
+            <Route path="sanpham/:id" element={<Chitietsanpham />} />
+            <Route path="orders" element={<OrdersPage />} />
+            <Route path="cart" element={<CartPage />} />
+            <Route path="bosuutap" element={<BoSuuTap />} />
+            <Route path="bosuutap/:id" element={<BoSuuTapDetail />} />
+            <Route path="muasam" element={<MuaSam />} />
+            <Route path="khuyenmai" element={<KhuyenMai />} />
+            <Route path="tintuc" element={<TinTuc />} />
+            <Route path="lienhe" element={<LienHe />} />
+          </Route>
 
-          {/* Admin Panel: chỉ admin mới được truy cập */}
-          <Route
-            path="admin/dashboard"
-            element={
-              <ProtectedRoute adminOnly={true}>
-                <Dashboard_Admin />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="admin/products"
-            element={
-              <ProtectedRoute adminOnly={true}>
-                <ListProducts_SP_Admin />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="admin/edit/:id"
-            element={
-              <ProtectedRoute adminOnly={true}>
-                <EditProduct_Admin />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="admin/users"
-            element={
-              <ProtectedRoute adminOnly={true}>
-                <AdminUsersPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="admin/orders"
-            element={
-              <ProtectedRoute adminOnly={true}>
-                <AdminOrdersPage />
-              </ProtectedRoute>
-            }
-          />
-          {/* Trang auth */}
+          {/* admin area */}
+          <Route element={<ProtectedRoute adminOnly={true} />}>
+            <Route path="admin/dashboard" element={<Dashboard_Admin />} />
+            <Route path="admin/products" element={<ListProducts_SP_Admin />} />
+            <Route path="admin/edit/:id" element={<EditProduct_Admin />} />
+            <Route path="admin/users" element={<AdminUsersPage />} />
+            <Route path="admin/orders" element={<AdminOrdersPage />} />
+          </Route>
+
+          {/* auth */}
           <Route path="login" element={<LoginPage />} />
           <Route path="logout" element={<LogoutPage />} />
           <Route path="register" element={<RegisterPage />} />
