@@ -1,11 +1,8 @@
-/* admin.css - Phiên bản dashboard hiện đại nâng cấp */
-
 body {
   margin: 0;
   font-family: "Segoe UI", sans-serif;
-  background-color: #f3f4f6;
+  background: #f3f4f6;
 }
-
 .admin-panel {
   display: flex;
   min-height: 100vh;
@@ -13,14 +10,14 @@ body {
 
 /* Sidebar */
 .admin-sidebar {
-  background-color: #1f2937;
+  background: #1f2937;
   color: #fff;
   width: 220px;
   transition: width 0.3s;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 .admin-sidebar.collapsed {
   width: 80px;
@@ -46,7 +43,6 @@ body {
   cursor: pointer;
   font-size: 1.2rem;
 }
-
 .sidebar-stats {
   display: flex;
   flex-direction: column;
@@ -59,7 +55,6 @@ body {
   gap: 10px;
   padding: 10px;
   border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.05);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 .stat-card:hover {
@@ -67,16 +62,16 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 .stat-card.products {
-  background-color: #3b82f6;
+  background: #3b82f6;
 }
 .stat-card.orders {
-  background-color: #10b981;
+  background: #10b981;
 }
 .stat-card.users {
-  background-color: #f59e0b;
+  background: #f59e0b;
 }
 .stat-card.admins {
-  background-color: #8b5cf6;
+  background: #8b5cf6;
 }
 .stat-card div p {
   margin: 0;
@@ -99,10 +94,11 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
   transition: background 0.3s;
 }
 .sidebar-menu li:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
 }
 .sidebar-menu li a {
@@ -113,27 +109,38 @@ body {
   gap: 10px;
 }
 
+.admin-sidebar.collapsed .stat-card div p,
+.admin-sidebar.collapsed .stat-card div h3,
+.admin-sidebar.collapsed .sidebar-menu li a span,
+.admin-sidebar.collapsed .logo span {
+  display: none;
+}
+
 /* Main content */
 .admin-content {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  background-color: #f3f4f6;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  background: #f3f4f6;
 }
 .admin-welcome h2 {
-  margin: 0 0 20px 0;
+  grid-column: 1/-1;
   font-size: 1.8rem;
   font-weight: bold;
   color: #111827;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-/* Charts */
+/* Chart section */
 .chart-section {
-  background-color: #fff;
+  background: #fff;
   padding: 15px;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
   transition: transform 0.3s, box-shadow 0.3s;
 }
 .chart-section:hover {
@@ -144,15 +151,10 @@ body {
   margin-bottom: 10px;
   font-weight: 600;
   color: #111827;
+  text-align: center;
 }
-
-/* Responsive Grid for Charts */
-@media (min-width: 768px) {
-  .admin-content > .chart-section {
-    width: calc(50% - 10px);
-    display: inline-block;
-    vertical-align: top;
-  }
+.chart-section canvas {
+  max-height: 250px;
 }
 
 /* Responsive */

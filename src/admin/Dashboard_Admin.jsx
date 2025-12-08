@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import {
   FaBoxOpen,
   FaShoppingCart,
-  FaBars,
+  FaUsers,
   FaUserShield,
+  FaBars,
+  FaSignOutAlt,
 } from "react-icons/fa";
 import supabase from "../supabaseClient";
 import "../assets/css/admin.css";
+
 import { Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -44,7 +47,9 @@ export default function Dashboard_Admin() {
   const [orderPieData, setOrderPieData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [adminName, setAdminName] = useState("");
+  const navigate = useNavigate();
 
+  // Fetch stats from Supabase
   const fetchStats = async () => {
     setLoading(true);
     try {
@@ -52,9 +57,7 @@ export default function Dashboard_Admin() {
         .from("product1")
         .select("*");
       const { data: ordersData } = await supabase.from("orders").select("*");
-      const { data: usersData } = await supabase
-        .from("users")
-        .select("username, role, created_at, email_confirmed_at");
+      const { data: usersData } = await supabase.from("users").select("*");
 
       const userCount = usersData.filter((u) => u.role === "user").length;
       const adminCount = usersData.filter((u) => u.role === "admin").length;
@@ -66,11 +69,10 @@ export default function Dashboard_Admin() {
         admins: adminCount,
       });
 
-      // Lấy admin đăng nhập
       const localUser = JSON.parse(localStorage.getItem("user"));
       if (localUser?.role === "admin") setAdminName(localUser.username);
 
-      const monthLabels = [
+      const months = [
         "Jan",
         "Feb",
         "Mar",
@@ -84,13 +86,15 @@ export default function Dashboard_Admin() {
         "Nov",
         "Dec",
       ];
+
+      // User registration per month
       const userMonthCounts = Array(12).fill(0);
       usersData.forEach((u) => {
         const d = new Date(u.created_at);
         userMonthCounts[d.getMonth()] += 1;
       });
       setUserBarData({
-        labels: monthLabels,
+        labels: months,
         datasets: [
           {
             label: "User đăng ký",
@@ -100,6 +104,7 @@ export default function Dashboard_Admin() {
         ],
       });
 
+      // User email confirmed
       const confirmed = usersData.filter((u) => u.email_confirmed_at).length;
       const notConfirmed = usersData.length - confirmed;
       setUserPieData({
@@ -112,13 +117,14 @@ export default function Dashboard_Admin() {
         ],
       });
 
+      // Orders per month
       const orderMonthCounts = Array(12).fill(0);
       ordersData.forEach((o) => {
         const d = new Date(o.created_at);
         orderMonthCounts[d.getMonth()] += 1;
       });
       setOrderBarData({
-        labels: monthLabels,
+        labels: months,
         datasets: [
           {
             label: "Đơn hàng",
@@ -128,6 +134,7 @@ export default function Dashboard_Admin() {
         ],
       });
 
+      // Orders by status
       const pending = ordersData.filter((o) => o.status === "pending").length;
       const completed = ordersData.filter(
         (o) => o.status === "completed"
@@ -155,6 +162,11 @@ export default function Dashboard_Admin() {
     fetchStats();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   return (
     <div className="admin-panel">
       {/* Sidebar */}
@@ -174,37 +186,58 @@ export default function Dashboard_Admin() {
 
         {!collapsed && !loading && (
           <div className="sidebar-stats">
-            {["products", "orders", "users", "admins"].map((key, i) => (
-              <div key={i} className={`stat-card ${key}`}>
-                {key === "products" && <FaBoxOpen size={24} />}
-                {key === "orders" && <FaShoppingCart size={24} />}
-                {key === "users" && <FaUserShield size={24} />}
-                {key === "admins" && <FaUserShield size={24} />}
-                <div>
-                  <p>{key.charAt(0).toUpperCase() + key.slice(1)}</p>
-                  <h3>{stats[key]}</h3>
-                </div>
+            <div className="stat-card products">
+              <FaBoxOpen size={24} />
+              <div>
+                <p>Sản phẩm</p>
+                <h3>{stats.products}</h3>
               </div>
-            ))}
+            </div>
+            <div className="stat-card orders">
+              <FaShoppingCart size={24} />
+              <div>
+                <p>Đơn hàng</p>
+                <h3>{stats.orders}</h3>
+              </div>
+            </div>
+            <div className="stat-card users">
+              <FaUsers size={24} />
+              <div>
+                <p>Users</p>
+                <h3>{stats.users}</h3>
+              </div>
+            </div>
+            <div className="stat-card admins">
+              <FaUserShield size={24} />
+              <div>
+                <p>Admins</p>
+                <h3>{stats.admins}</h3>
+              </div>
+            </div>
           </div>
         )}
 
         <ul className="sidebar-menu">
           <li>
             <Link to="/admin/products">
-              <FaBoxOpen /> {!collapsed && "Quản lý sản phẩm"}
+              <FaBoxOpen /> {!collapsed && <span>Quản lý sản phẩm</span>}
             </Link>
           </li>
           <li>
             <Link to="/admin/orders">
-              <FaShoppingCart /> {!collapsed && "Quản lý đơn hàng"}
+              <FaShoppingCart /> {!collapsed && <span>Quản lý đơn hàng</span>}
             </Link>
           </li>
           <li>
             <Link to="/admin/users">
-              <FaUserShield /> {!collapsed && "Quản lý Users"}
+              <FaUserShield /> {!collapsed && <span>Quản lý Users</span>}
             </Link>
           </li>
+          {!collapsed && (
+            <li onClick={handleLogout}>
+              <FaSignOutAlt /> <span>Đăng xuất</span>
+            </li>
+          )}
         </ul>
       </aside>
 
@@ -218,6 +251,26 @@ export default function Dashboard_Admin() {
 
         {!loading ? (
           <>
+            <section className="chart-section">
+              <h4>Sản phẩm: Tổng số lượng</h4>
+              <Bar
+                data={{
+                  labels: ["Sản phẩm"],
+                  datasets: [
+                    {
+                      label: "Số lượng sản phẩm",
+                      data: [stats.products],
+                      backgroundColor: "#8884d8",
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  plugins: { legend: { display: true } },
+                }}
+              />
+            </section>
+
             <section className="chart-section">
               <h4>User: Đăng ký theo tháng</h4>
               {userBarData && (
