@@ -16,7 +16,6 @@ export default function EditProduct_Admin() {
   });
   const [loading, setLoading] = useState(false);
 
-  // Fetch product info
   useEffect(() => {
     if (id !== "new") {
       setLoading(true);
@@ -46,23 +45,20 @@ export default function EditProduct_Admin() {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      if (id === "new") {
-        const { error } = await supabase.from("product1").insert([product]);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("product1")
-          .update(product)
-          .eq("id", id);
-        if (error) throw error;
-      }
-      navigate("/admin/products");
-    } catch (err) {
-      alert("Lỗi khi lưu sản phẩm: " + err.message);
-    } finally {
-      setLoading(false);
+    if (id === "new") {
+      const { error } = await supabase.from("product1").insert([product]);
+      if (error) alert("Lỗi khi thêm sản phẩm: " + error.message);
+      else navigate("/admin/products");
+    } else {
+      const { error } = await supabase
+        .from("product1")
+        .update(product)
+        .eq("id", id);
+      if (error) alert("Lỗi khi cập nhật sản phẩm: " + error.message);
+      else navigate("/admin/products");
     }
+
+    setLoading(false);
   };
 
   return (
@@ -84,26 +80,20 @@ export default function EditProduct_Admin() {
                   name="title"
                   value={product.title}
                   onChange={handleChange}
-                  placeholder=" "
                   required
                 />
                 <label>Tên sản phẩm</label>
               </div>
-
               <div className="input-group">
                 <input
                   type="number"
                   name="price"
                   value={product.price}
                   onChange={handleChange}
-                  placeholder=" "
-                  min="0"
-                  step="1000"
                   required
                 />
-                <label>Giá (VNĐ)</label>
+                <label>Giá</label>
               </div>
-
               <div className="input-group">
                 <input
                   type="number"
@@ -113,20 +103,16 @@ export default function EditProduct_Admin() {
                   min="0"
                   max="5"
                   onChange={handleChange}
-                  placeholder=" "
                 />
                 <label>Đánh giá trung bình</label>
               </div>
-
               <div className="input-group">
                 <input
                   type="number"
                   name="rating_count"
                   value={product.rating_count}
                   min="0"
-                  step="1"
                   onChange={handleChange}
-                  placeholder=" "
                 />
                 <label>Số lượt đánh giá</label>
               </div>
@@ -140,7 +126,6 @@ export default function EditProduct_Admin() {
                   name="image"
                   value={product.image}
                   onChange={handleChange}
-                  placeholder=" "
                 />
                 <label>Hình ảnh (URL)</label>
               </div>
@@ -153,14 +138,13 @@ export default function EditProduct_Admin() {
             </div>
           </div>
 
-          {/* Buttons */}
           <div className="actions">
-            <button type="submit" className="btn-submit">
+            <button type="submit" className="btn btn-submit">
               {id === "new" ? "Thêm sản phẩm" : "Cập nhật sản phẩm"}
             </button>
             <button
               type="button"
-              className="btn-cancel"
+              className="btn btn-cancel"
               onClick={() => navigate("/admin/products")}
             >
               Hủy
