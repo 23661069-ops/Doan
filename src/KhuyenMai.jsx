@@ -1,39 +1,201 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import supabase from "./supabaseClient";
+import { Link } from "react-router-dom";
 
 export default function KhuyenMai() {
-  const promotions = [
-    { id: 1, text: "Giảm 50% toàn bộ giày sneaker", icon: "🔥" },
-    { id: 2, text: "Mua 2 áo thun tặng 1", icon: "🎁" },
-    { id: 3, text: "Freeship đơn từ 499k", icon: "🚚" },
-  ];
+  const [promos, setPromos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPromos = async () => {
+      setLoading(true);
+      try {
+        // Lấy 10 sản phẩm khuyến mãi ngẫu nhiên kèm dữ liệu sản phẩm từ product1
+        const { data, error } = await supabase
+          .from("khuyenmai")
+          .select(
+            `
+            *,
+            product:product_id (
+              title,
+              image,
+              price,
+              description
+            )
+          `
+          )
+          .limit(10)
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+        setPromos(data || []);
+      } catch (err) {
+        console.error("Lỗi lấy khuyến mãi:", err.message);
+        setPromos([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPromos();
+  }, []);
+
+  const addToCart = (product) => {
+    if (!product) return;
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const found = cart.find((item) => item.id === product.id);
+    if (found) found.quantity += 1;
+    else cart.push({ ...product, quantity: 1 });
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Đã thêm vào giỏ!");
+  };
+
+  if (loading)
+    return <p style={{ textAlign: "center" }}>Đang tải khuyến mãi...</p>;
+  if (!promos.length)
+    return <p style={{ textAlign: "center" }}>Chưa có khuyến mãi!</p>;
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1 style={{ color: "#e63946", marginBottom: "20px" }}>Khuyến Mãi</h1>
-      <p style={{ fontSize: "1.1rem", marginBottom: "15px" }}>
-        Các chương trình giảm giá đang diễn ra:
-      </p>
+      <h1 style={{ marginBottom: 20 }}>Khuyến Mãi</h1>
 
-      <div style={{ display: "grid", gap: "15px", maxWidth: "600px" }}>
-        {promotions.map((promo) => (
-          <div
-            key={promo.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              padding: "15px",
-              borderRadius: "8px",
-              background: "#ffe5e0",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              fontWeight: "bold",
-            }}
-          >
-            <span style={{ fontSize: "1.5rem" }}>{promo.icon}</span>
-            <span>{promo.text}</span>
-          </div>
-        ))}
+      <div style={styles.grid}>
+        {promos.map((p) => {
+          const product = p.product;
+          if (!product) return null;
+
+          const finalPrice = p.discount
+            ? Math.round(product.price * (1 - p.discount / 100))
+            : product.price;
+
+          return (
+            <div key={p.id} style={styles.card}>
+              <div style={{ position: "relative" }}>
+                <img
+                  src={product.image || "/placeholder.png"}
+                  alt={product.title}
+                  style={styles.image}
+                />
+                {p.discount && <span style={styles.badge}>-{p.discount}%</span>}
+              </div>
+
+              <h4 style={styles.title}>
+                {product.title.length > 40
+                  ? product.title.slice(0, 40) + "..."
+                  : product.title}
+              </h4>
+
+              <p style={styles.price}>
+                {p.discount && (
+                  <span style={styles.oldPrice}>
+                    {product.price.toLocaleString("vi-VN")}₫
+                  </span>
+                )}
+                {finalPrice.toLocaleString("vi-VN")}₫
+              </p>
+
+              <div style={styles.buttonRow}>
+                <Link to={`/sanpham/${p.product_id}`} style={styles.detailBtn}>
+                  Xem chi tiết
+                </Link>
+                <button
+                  onClick={() => addToCart(product)}
+                  style={styles.cartBtn}
+                >
+                  <span style={{ marginRight: 6 }}>🛒</span>Thêm
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
+
+// ============================
+// STYLE
+// ============================
+const styles = {
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+    gap: 20,
+  },
+  card: {
+    display: "flex",
+    flexDirection: "column",
+    borderRadius: 12,
+    overflow: "hidden",
+    background: "#fff",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+    border: "1px solid #eee",
+    transition: "0.2s ease",
+    padding: 10,
+  },
+  image: {
+    width: "100%",
+    height: 220,
+    objectFit: "cover",
+    borderRadius: 10,
+  },
+  badge: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    background: "#e52e71",
+    color: "#fff",
+    fontWeight: "bold",
+    padding: "4px 8px",
+    borderRadius: 8,
+    fontSize: 12,
+  },
+  title: {
+    marginTop: 10,
+    fontSize: 15,
+    fontWeight: 500,
+    minHeight: 45,
+  },
+  price: {
+    color: "#e64545",
+    fontWeight: 700,
+    fontSize: 16,
+    marginBottom: 12,
+  },
+  oldPrice: {
+    textDecoration: "line-through",
+    color: "#888",
+    fontWeight: 400,
+    marginRight: 6,
+  },
+  buttonRow: {
+    display: "flex",
+    marginTop: "auto",
+    gap: 8,
+  },
+  detailBtn: {
+    flex: 1,
+    padding: "8px 10px",
+    border: "1px solid #ddd",
+    borderRadius: 8,
+    textAlign: "center",
+    background: "#f1f3f5",
+    color: "#333",
+    fontSize: 14,
+    textDecoration: "none",
+  },
+  cartBtn: {
+    flex: 1,
+    padding: "8px 10px",
+    borderRadius: 8,
+    background: "#000",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+    fontSize: 14,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: 500,
+  },
+};
